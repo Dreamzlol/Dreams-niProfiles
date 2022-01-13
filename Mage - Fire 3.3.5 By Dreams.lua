@@ -12,6 +12,7 @@ local queue = {
 	"Mana Gem",
 	"Fireblast",
     "Evocation",
+    "Pyroblast",
     "Living Bomb",
 	"Mirror Image",
     "Combustion",
