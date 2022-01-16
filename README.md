@@ -1,3 +1,3 @@
 # NiProfiles (WIP)
 
-Ni Profiles for Wrath of the Lichking (3.3.5)
+Ni Profiles for Wrath of the Lich King (3.3.5)
