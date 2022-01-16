@@ -69,7 +69,7 @@ local abilities = {
 
     ["Slice and Dice"] = function()
         if ni.spell.available("Slice and Dice") and GetComboPoints("player", "target") >= 2 and
-            ni.unit.buffremaining("player", "Slice and Dice", "player") <= 4 then
+            ni.unit.buffremaining("player", "Slice and Dice", "player") <= 3 then
             ni.spell.cast("Slice and Dice", "target")
             return true;
         end
@@ -77,7 +77,7 @@ local abilities = {
 
     ["Rupture"] = function()
         if ni.spell.available("Rupture") and GetComboPoints("player", "target") >= 4 and
-            ni.unit.debuffremaining("target", "Rupture", "player") <= 4 then
+            ni.unit.debuffremaining("target", "Rupture", "player") <= 5 then
             ni.spell.cast("Rupture", "target")
             return true;
         end
