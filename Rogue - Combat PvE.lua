@@ -17,9 +17,7 @@ local queue = {
 local abilities = {
     ["Pause"] = function()
         if IsMounted() or not UnitAffectingCombat("player") or not ni.unit.exists("target") or
-            UnitIsDeadOrGhost("player") then 
-                return true;
-            end
+            UnitIsDeadOrGhost("player") then return true; end
     end,
 
     ["Start Attack"] = function()
@@ -30,16 +28,17 @@ local abilities = {
         end
     end,
 
-    ["Hyperspeed Accelerators"] = function()
-        if ni.unit.isboss("target") and ni.player.slotcd(10) == 0 then
-            ni.player.useinventoryitem(10)
+    ["Tricks of the Trade"] = function()
+        if ni.spell.valid("focus", "57934", false, true, true) and ni.spell.available("Tricks of the Trade") and
+            ni.unit.exists("focus") then
+            ni.spell.cast("Tricks of the Trade", "focus")
             return true;
         end
     end,
 
-    ["Tricks of the Trade"] = function()
-        if ni.spell.available("Tricks of the Trade") and ni.unit.exists("focus") then
-            ni.spell.cast("Tricks of the Trade", "focus")
+    ["Hyperspeed Accelerators"] = function()
+        if ni.unit.isboss("target") and ni.player.slotcastable(10) then
+            ni.player.useinventoryitem(10)
             return true;
         end
     end,
