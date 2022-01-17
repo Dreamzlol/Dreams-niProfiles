@@ -37,7 +37,7 @@ local abilities = {
     end,
 
     ["Hyperspeed Accelerators"] = function()
-        if ni.unit.isboss("target") and ni.player.slotcastable(10) then
+        if ni.unit.isboss("target") and ni.player.slotcastable(10) and ni.player.slotcd() < 1 then
             ni.player.useinventoryitem(10)
             return true;
         end
