@@ -16,14 +16,18 @@ local queue = {
 
 local abilities = {
     ["Pause"] = function()
-        if IsMounted() or not UnitAffectingCombat("player") or not UnitExists("target") or UnitIsDeadOrGhost("player") then
-            return true;
-        end
+        if IsMounted() or not UnitAffectingCombat("player") or not ni.unit.exists("target") or
+            UnitIsDeadOrGhost("player") then 
+                return true;
+            end
     end,
 
     ["Start Attack"] = function()
-        if UnitExists("target") and UnitCanAttack("player", "target") and not UnitIsDeadOrGhost("target") and
-            UnitAffectingCombat("player") and not IsCurrentSpell(6603) then ni.spell.cast(6603); end
+        if ni.unit.exists("target") and UnitCanAttack("player", "target") and not UnitIsDeadOrGhost("target") and
+            UnitAffectingCombat("player") and not IsCurrentSpell(6603) then
+            ni.spell.cast(6603);
+            return true;
+        end
     end,
 
     ["Hyperspeed Accelerators"] = function()
@@ -34,8 +38,7 @@ local abilities = {
     end,
 
     ["Tricks of the Trade"] = function()
-        if ni.spell.available("Tricks of the Trade", "focus") and ni.unit.exists("focus") and
-            IsSpellInRange("Tricks of the Trade", "focus") then
+        if ni.spell.available("Tricks of the Trade") and ni.unit.exists("focus") then
             ni.spell.cast("Tricks of the Trade", "focus")
             return true;
         end
