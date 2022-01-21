@@ -5,6 +5,7 @@
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Changed priority of rupture and slice and dice
 --------------------------------
 local ni = ...
 
@@ -16,8 +17,8 @@ local queue = {
     "Killing Spree",
     "Blade Flurry",
     "Adrenaline Rush",
-    "Rupture",
     "Slice and Dice",
+    "Rupture",
     "Eviscerate",
     "Sinister Strike",
 }
@@ -85,20 +86,20 @@ local abilities = {
         end
     end,
 
-    ["Rupture"] = function()
-        if ni.spell.available("Rupture")
-        and GetComboPoints("player", "target") >= 2
-        and ni.unit.debuffremaining("target", "Rupture", "player") <= 2 then
-            ni.spell.cast("Rupture", "target")
-        end
-    end,
-
     ["Slice and Dice"] = function()
         if ni.spell.available("Slice and Dice")
         and GetComboPoints("player", "target") >= 2
         and ni.unit.buffremaining("player", "Slice and Dice", "player") <= 2 then
             ni.spell.cast("Slice and Dice", "target")
             return true;
+        end
+    end,
+
+    ["Rupture"] = function()
+        if ni.spell.available("Rupture")
+        and GetComboPoints("player", "target") >= 2
+        and ni.unit.debuffremaining("target", "Rupture", "player") <= 2 then
+            ni.spell.cast("Rupture", "target")
         end
     end,
 
