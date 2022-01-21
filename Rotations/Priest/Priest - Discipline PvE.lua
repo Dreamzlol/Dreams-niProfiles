@@ -5,6 +5,7 @@
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Added Power Infusion
 --------------------------------
 local ni = ...
 
@@ -12,13 +13,14 @@ local queue = {
     "Inner Fire",
     "Pause Rotation",
     "Pain Suppression",
+    "Power Infusion",
     "Shadowfiend",
     "Dispel Magic",
     "Renew",
     "Prayer of Mending",
-    "Power Word: Shield",
     "Penance",
-    "Flash Heal"
+    "Flash Heal",
+    "Power Word: Shield",
 }
 
 local abilities = {
@@ -47,10 +49,18 @@ local abilities = {
         end
     end,
 
+    ["Power Infusion"] = function()
+        if ni.spell.available("Power Infusion")
+        and not ni.unit.buff("player", "Power Infusion")
+        and ni.player.power() < 90 then
+            ni.spell.cast("Power Infusion")
+        end
+    end,
+
     ["Shadowfiend"] = function()
         if ni.spell.available("Shadowfiend")
         and ni.unit.exists("target")
-        and ni.player.power() < 60 then
+        and ni.player.power() < 20 then
             ni.spell.cast("Shadowfiend", "target")
         end
     end,
@@ -87,6 +97,26 @@ local abilities = {
         end
     end,
 
+    ["Penance"] = function ()
+        for i = 1, #ni.members do
+            if ni.members[i].hp < 80
+            and ni.members[i].range
+            and ni.spell.available("Penance") then
+                ni.spell.cast("Penance", ni.members[i].unit)
+            end
+        end
+    end,
+
+    ["Flash Heal"] = function ()
+        for i = 1, #ni.members do
+            if ni.members[i].hp < 60
+            and ni.members[i].range
+            and ni.spell.available("Flash Heal") then
+                ni.spell.cast("Flash Heal", ni.members[i].unit)
+            end
+        end
+    end,
+
     ["Power Word: Shield"] = function ()
         for i = 1, #ni.members do
             if ni.members[i].hp > 60
@@ -98,26 +128,6 @@ local abilities = {
             end
         end
     end,
-
-    ["Penance"] = function ()
-        for i = 1, #ni.members do
-            if ni.members[i].hp < 90
-            and ni.members[i].range
-            and ni.spell.available("Penance") then
-                ni.spell.cast("Penance", ni.members[i].unit)
-            end
-        end
-    end,
-
-    ["Flash Heal"] = function ()
-        for i = 1, #ni.members do
-            if ni.members[i].hp < 90
-            and ni.members[i].range
-            and ni.spell.available("Flash Heal") then
-                ni.spell.cast("Flash Heal", ni.members[i].unit)
-            end
-        end
-    end
 }
 
 ni.bootstrap.rotation("Priest - Discipline PvE", queue, abilities)
