@@ -75,7 +75,8 @@ local abilities = {
     ["Mirror Image"] = function()
         if ni.spell.available("Mirror Image")
         and ni.unit.isboss("target")
-        and not ni.unit.ischanneling("player") then
+        and not ni.unit.ischanneling("player")
+        and ni.unit.debuffstacks("player", 36032) >= 3 then
             ni.spell.cast("Mirror Image")
         end
     end,
@@ -83,7 +84,8 @@ local abilities = {
     ["Icy Veins"] = function()
         if ni.spell.available("Icy Veins")
         and ni.unit.isboss("target")
-        and not ni.unit.ischanneling("player") then
+        and not ni.unit.ischanneling("player")
+        and ni.unit.debuffstacks("player", 36032) >= 3 then
             ni.spell.cast("Icy Veins")
         end
     end,
@@ -91,7 +93,8 @@ local abilities = {
     ["Arcane Power"] = function()
         if ni.spell.available("Arcane Power")
         and ni.unit.isboss("target")
-        and not ni.unit.ischanneling("player") then
+        and not ni.unit.ischanneling("player")
+        and ni.unit.debuffstacks("player", 36032) >= 3 then
             ni.spell.cast("Arcane Power")
         end
     end,
@@ -99,14 +102,15 @@ local abilities = {
     ["Presence of Mind"] = function()
         if ni.spell.available("Presence of Mind")
         and ni.unit.isboss("target")
-        and not ni.unit.ischanneling("player") then
+        and not ni.unit.ischanneling("player")
+        and ni.unit.debuffstacks("player", 36032) >= 1 then
             ni.spell.cast("Presence of Mind", "target")
         end
     end,
 
     ["Arcane Missiles"] = function()
         if ni.spell.available("Arcane Missiles")
-        and ni.unit.debuffstacks("player", 36032) >= 3
+        and ni.unit.debuffstacks("player", 36032) == 4
         and ni.unit.buff("player", "Missile Barrage")
         and not ni.unit.ischanneling("player") then
             ni.spell.cast("Arcane Missiles", "target")
@@ -120,4 +124,5 @@ local abilities = {
         end
     end,
 }
+
 ni.bootstrap.rotation("Mage - Arcane PvE", queue, abilities)
