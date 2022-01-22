@@ -1,1 +1,1 @@
-# ni profiles for 3.3.5 (WIP)
+# Ni Profiles for Wrath of the Lich King (Work in Progress)
