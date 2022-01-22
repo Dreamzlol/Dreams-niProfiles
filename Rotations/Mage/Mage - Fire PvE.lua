@@ -1,10 +1,11 @@
 --------------------------------
 -- Mage - Fire PvE
--- Version - 1.0.0
+-- Version - 1.0.1
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Added Scorch for crit debuff if you have no warlock, Added Fire Blast while moving
 --------------------------------
 local ni = ...
 
@@ -15,7 +16,8 @@ local queue = {
     "Pause Rotation",
     "Mana Sapphire",
     "Evocation",
-    "Fireblast",
+    "Scorch",
+    "Fire Blast",
     "Living Bomb",
     "Pyroblast",
     "Mirror Image",
@@ -67,20 +69,28 @@ local abilities = {
         and UnitAffectingCombat("player")
         and ni.player.power() < 20
         and not ni.unit.ismoving("player") then
-            ni.spell.cast("Evocation", "player")
+            ni.spell.cast("Evocation")
         end
     end,
 
-    ["Fireblast"] = function()
-        if ni.spell.available("Fireblast", "target")
+    ["Scorch"] = function()
+        if not ni.unit.debuff("target", "Shadow Mastery")
+        and not ni.unit.debuff("target", "Improved Scorch")
+        and ni.spell.available("Scorch", "target") then
+            ni.spell.cast("Scorch", "target")
+        end
+    end,
+
+    ["Fire Blast"] = function()
+        if ni.spell.available("Fire Blast", "target")
         and ni.player.ismoving() then
-            ni.spell.cast("Fireblast", "target")
+            ni.spell.cast("Fire Blast", "target")
         end
     end,
 
     ["Living Bomb"] = function()
         if ni.spell.available("Living Bomb", "target")
-        and not ni.unit.debuff("target", 55360, "player")
+        and not ni.unit.debuff("target", "Living Bomb", "player")
         and not ni.unit.ischanneling("player") then
             ni.spell.cast("Living Bomb", "target")
         end
@@ -88,7 +98,7 @@ local abilities = {
 
     ["Pyroblast"] = function()
         if ni.spell.available("Pyroblast", "target")
-        and ni.unit.buff("player", 48108, "player")
+        and ni.unit.buff("player", "Hot Streak")
         and not ni.unit.ischanneling("player") then
             ni.spell.cast("Pyroblast", "target")
         end
@@ -98,7 +108,7 @@ local abilities = {
         if ni.spell.available("Mirror Image")
         and ni.unit.isboss("target")
         and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Mirror Image", "player")
+            ni.spell.cast("Mirror Image")
         end
     end,
 
@@ -106,7 +116,7 @@ local abilities = {
         if ni.spell.available("Combustion")
         and ni.unit.isboss("target")
         and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Combustion", "player")
+            ni.spell.cast("Combustion")
         end
     end,
 

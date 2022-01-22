@@ -1,12 +1,12 @@
 --------------------------------
 -- Rogue - Combat PvE
--- Version - 1.0.0
+-- Version - 1.0.2
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
--- 1.0.1 Changed priority of rupture and slice and dice
--- 1.0.2 Added tricks on focus target
+-- 1.0.1 Changed priority of Rupture and Slice And Dice
+-- 1.0.2 Added Tricks on Focus Target
 --------------------------------
 local ni = ...
 
@@ -63,7 +63,7 @@ local abilities = {
         and ni.unit.isboss("target")
         and ni.unit.debuff("target", "Rupture", "player")
         and ni.unit.buff("player", "Slice and Dice")
-        and ni.player.power() < 45 then
+        and ni.player.power() < 60 then
             ni.spell.cast("Killing Spree", "target")
         end
     end,
@@ -82,7 +82,7 @@ local abilities = {
         and ni.unit.isboss("target")
         and ni.unit.debuff("target", "Rupture", "player")
         and ni.unit.buff("player", "Slice and Dice")
-        and ni.player.power() < 35 then
+        and ni.player.power() < 40 then
             ni.spell.cast("Adrenaline Rush", "target")
         end
     end,
@@ -117,4 +117,5 @@ local abilities = {
         end
     end,
 }
+
 ni.bootstrap.rotation("Rogue - Combat PvE", queue, abilities)

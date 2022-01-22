@@ -1,6 +1,6 @@
 --------------------------------
 -- Priest - Discipline PvE
--- Version - 1.0.0
+-- Version - 1.0.2
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -72,7 +72,7 @@ local abilities = {
         for i = 1, #ni.members do
             if ni.members[i]:debufftype("Disease")
             and ni.members[i].range
-            and ni.members[i].hp > 80
+            and ni.members[i].hp > 40
             and ni.spell.available("Cure Disease") then
                 ni.spell.cast("Cure Disease", ni.members[i].unit)
             end
@@ -83,7 +83,7 @@ local abilities = {
         for i = 1, #ni.members do
             if ni.members[i]:debufftype("Magic")
             and ni.members[i].range
-            and ni.members[i].hp > 80
+            and ni.members[i].hp > 40
             and ni.spell.available("Dispel Magic") then
                 ni.spell.cast("Dispel Magic", ni.members[i].unit)
             end
@@ -145,7 +145,7 @@ local abilities = {
 
     ["Power Word: Shield"] = function ()
         for i = 1, #ni.members do
-            if ni.members[i].hp > 80
+            if ni.members[i].hp > 60
             and ni.members[i].range
             and not ni.unit.debuff(ni.members[i].unit, "Weakened Soul", "player")
             and not ni.unit.buff(ni.members[i].unit, "Power Word: Shield", "player")
