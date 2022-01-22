@@ -6,6 +6,7 @@
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Changed priority of rupture and slice and dice
+-- 1.0.2 Added tricks on focus target
 --------------------------------
 local ni = ...
 
@@ -43,7 +44,7 @@ local abilities = {
     end,
 
     ["Tricks of the Trade"] = function()
-        if ni.spell.valid("focus", "57934", false, true, true) 
+        if ni.spell.valid("focus", "57934", false, true, true)
         and ni.spell.available("Tricks of the Trade")
         and ni.unit.exists("focus") and ni.player.power() < 85 then
             ni.spell.cast("Tricks of the Trade", "focus")
@@ -116,5 +117,4 @@ local abilities = {
         end
     end,
 }
-
 ni.bootstrap.rotation("Rogue - Combat PvE", queue, abilities)

@@ -1,5 +1,5 @@
 --------------------------------
--- Mage - Fire PvE
+-- Mage - Arcane PvE
 -- Version - 1.0.0
 -- Author - Dreams
 --------------------------------
@@ -15,12 +15,12 @@ local queue = {
     "Pause Rotation",
     "Mana Sapphire",
     "Evocation",
-    "Fireblast",
-    "Living Bomb",
-    "Pyroblast",
+    "Icy Veins",
     "Mirror Image",
-    "Combustion",
-    "Fireball",
+    "Arcane Power",
+    "Presence of Mind",
+    "Arcane Missiles",
+    "Arcane Blast"
 }
 
 local abilities = {
@@ -43,7 +43,7 @@ local abilities = {
         if ni.spell.available("Conjure Mana Gem")
         and not ni.player.hasitem(33312)
         and not UnitAffectingCombat("player") then
-            ni.spell.cast("Conjure Mana Gem", "player")
+            ni.spell.cast("Conjure Mana Gem")
         end
     end,
 
@@ -57,7 +57,8 @@ local abilities = {
 
     ["Mana Sapphire"] = function()
         if ni.player.itemcd(33312) == 0
-        and ni.player.power() < 85 then
+        and ni.player.power() < 85
+        and not ni.unit.ischanneling("player") then
             ni.player.useitem(33312)
         end
     end,
@@ -67,30 +68,7 @@ local abilities = {
         and UnitAffectingCombat("player")
         and ni.player.power() < 20
         and not ni.unit.ismoving("player") then
-            ni.spell.cast("Evocation", "player")
-        end
-    end,
-
-    ["Fireblast"] = function()
-        if ni.spell.available("Fireblast", "target")
-        and ni.player.ismoving() then
-            ni.spell.cast("Fireblast", "target")
-        end
-    end,
-
-    ["Living Bomb"] = function()
-        if ni.spell.available("Living Bomb", "target")
-        and not ni.unit.debuff("target", 55360, "player")
-        and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Living Bomb", "target")
-        end
-    end,
-
-    ["Pyroblast"] = function()
-        if ni.spell.available("Pyroblast", "target")
-        and ni.unit.buff("player", 48108, "player")
-        and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Pyroblast", "target")
+            ni.spell.cast("Evocation")
         end
     end,
 
@@ -98,24 +76,48 @@ local abilities = {
         if ni.spell.available("Mirror Image")
         and ni.unit.isboss("target")
         and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Mirror Image", "player")
+            ni.spell.cast("Mirror Image")
         end
     end,
 
-    ["Combustion"] = function()
-        if ni.spell.available("Combustion")
+    ["Icy Veins"] = function()
+        if ni.spell.available("Icy Veins")
         and ni.unit.isboss("target")
         and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Combustion", "player")
+            ni.spell.cast("Icy Veins")
         end
     end,
 
-    ["Fireball"] = function()
-        if ni.spell.available("Fireball", "target")
+    ["Arcane Power"] = function()
+        if ni.spell.available("Arcane Power")
+        and ni.unit.isboss("target")
         and not ni.unit.ischanneling("player") then
-            ni.spell.cast("Fireball", "target")
+            ni.spell.cast("Arcane Power")
+        end
+    end,
+
+    ["Presence of Mind"] = function()
+        if ni.spell.available("Presence of Mind")
+        and ni.unit.isboss("target")
+        and not ni.unit.ischanneling("player") then
+            ni.spell.cast("Presence of Mind", "target")
+        end
+    end,
+
+    ["Arcane Missiles"] = function()
+        if ni.spell.available("Arcane Missiles")
+        and ni.unit.debuffstacks("player", 36032) >= 3
+        and ni.unit.buff("player", "Missile Barrage")
+        and not ni.unit.ischanneling("player") then
+            ni.spell.cast("Arcane Missiles", "target")
+        end
+    end,
+
+    ["Arcane Blast"] = function()
+        if ni.spell.available("Arcane Blast")
+        and not ni.unit.ischanneling("player") then
+            ni.spell.cast("Arcane Blast", "target")
         end
     end,
 }
-
-ni.bootstrap.rotation("Mage - Fire PvE", queue, abilities)
+ni.bootstrap.rotation("Mage - Arcane PvE", queue, abilities)
