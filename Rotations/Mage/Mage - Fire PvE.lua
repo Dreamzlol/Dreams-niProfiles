@@ -53,16 +53,12 @@ local abilities = {
     end,
 
     ["Pause Rotation"] = function()
-        if not UnitExists("target")
-		 or (UnitExists("target")
-		 and (not UnitCanAttack("player", "target")
-		 or UnitIsDeadOrGhost("target")))
-		 or UnitChannelInfo("player")
-		 or UnitIsDeadOrGhost("player")
-		 or IsMounted() then
-			return true;
-		end
-	end,
+        if IsMounted()
+        or not UnitAffectingCombat("player")
+        or UnitIsDeadOrGhost("player") then
+            return true;
+        end
+    end,
 
     ["Auto Target"] = function()
 		if UnitAffectingCombat("player")
