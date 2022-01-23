@@ -6,7 +6,7 @@
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Added Scorch for crit debuff if you have no warlock, Added Fire Blast while moving
--- 1.0.2 Prevent clipping / double casting of Scorch
+-- 1.0.2 Added Auto Target
 --------------------------------
 local ni = ...
 
@@ -15,6 +15,7 @@ local queue = {
     "Arcane Brilliance",
     "Conjure Mana Gem",
     "Pause Rotation",
+    "Auto Target",
     "Mana Sapphire",
     "Evocation",
     "Scorch",
@@ -30,6 +31,7 @@ local abilities = {
     ["Molten Armor"] = function()
         if ni.spell.available("Molten Armor")
         and not ni.unit.buff("player", "Molten Armor") then
+            ni.vars.debug = false
             ni.spell.cast("Molten Armor", "player")
         end
     end,
@@ -51,12 +53,26 @@ local abilities = {
     end,
 
     ["Pause Rotation"] = function()
-        if IsMounted()
-        or not UnitAffectingCombat("player")
-        or UnitIsDeadOrGhost("player") then
-            return true;
-        end
-    end,
+        if not UnitExists("target")
+		 or (UnitExists("target")
+		 and (not UnitCanAttack("player", "target")
+		 or UnitIsDeadOrGhost("target")))
+		 or UnitChannelInfo("player")
+		 or UnitIsDeadOrGhost("player")
+		 or IsMounted() then
+			return true;
+		end
+	end,
+
+    ["Auto Target"] = function()
+		if UnitAffectingCombat("player")
+		 and ((ni.unit.exists("target")
+		 and UnitIsDeadOrGhost("target")
+		 and not UnitCanAttack("player", "target"))
+		 or not ni.unit.exists("target")) then
+			ni.player.runtext("/targetenemy")
+		end
+	end,
 
     ["Mana Sapphire"] = function()
         if ni.player.itemcd(33312) == 0
@@ -77,9 +93,9 @@ local abilities = {
     ["Scorch"] = function()
         if not ni.unit.debuff("target", "Shadow Mastery")
         and not ni.unit.debuff("target", "Improved Scorch")
-        and not ni.unit.iscasting("player")
-        and ni.spell.available("Scorch", "target") then
-            ni.spell.cast("Scorch", "target")
+        and ni.spell.available("Scorch", "target")
+        and not ni.unit.ischanneling("player") then
+            ni.spell.cast("Scorch")
         end
     end,
 

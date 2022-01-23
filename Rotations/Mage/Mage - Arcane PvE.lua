@@ -1,10 +1,11 @@
 --------------------------------
 -- Mage - Arcane PvE
--- Version - 1.0.0
+-- Version - 1.0.1
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Added Auto Target
 --------------------------------
 local ni = ...
 
@@ -13,6 +14,7 @@ local queue = {
     "Arcane Brilliance",
     "Conjure Mana Gem",
     "Pause Rotation",
+    "Auto Target",
     "Mana Sapphire",
     "Evocation",
     "Icy Veins",
@@ -48,12 +50,26 @@ local abilities = {
     end,
 
     ["Pause Rotation"] = function()
-        if IsMounted()
-        or not UnitAffectingCombat("player")
-        or UnitIsDeadOrGhost("player") then
-            return true;
-        end
-    end,
+        if not UnitExists("target")
+		 or (UnitExists("target")
+		 and (not UnitCanAttack("player", "target")
+		 or UnitIsDeadOrGhost("target")))
+		 or UnitChannelInfo("player")
+		 or UnitIsDeadOrGhost("player")
+		 or IsMounted() then
+			return true;
+		end
+	end,
+
+    ["Auto Target"] = function()
+		if UnitAffectingCombat("player")
+		 and ((ni.unit.exists("target")
+		 and UnitIsDeadOrGhost("target")
+		 and not UnitCanAttack("player", "target"))
+		 or not ni.unit.exists("target")) then
+			ni.player.runtext("/targetenemy")
+		end
+	end,
 
     ["Mana Sapphire"] = function()
         if ni.player.itemcd(33312) == 0
@@ -67,7 +83,7 @@ local abilities = {
         if ni.spell.available("Evocation")
         and UnitAffectingCombat("player")
         and ni.player.power() < 20
-        and not ni.player.movingfor(2) then
+        and not ni.player.movingfor(3) then
             ni.spell.cast("Evocation")
         end
     end,

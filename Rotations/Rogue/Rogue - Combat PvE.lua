@@ -1,17 +1,19 @@
 --------------------------------
 -- Rogue - Combat PvE
--- Version - 1.0.2
+-- Version - 1.0.3
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Changed priority of Rupture and Slice And Dice
 -- 1.0.2 Added Tricks on Focus Target
+-- 1.0.3 Added Auto Target
 --------------------------------
 local ni = ...
 
 local queue = {
     "Pause Rotation",
+    "Auto Target",
     "Start Attack",
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
@@ -26,12 +28,26 @@ local queue = {
 
 local abilities = {
     ["Pause Rotation"] = function()
-        if IsMounted()
-        or not UnitAffectingCombat("player")
-        or UnitIsDeadOrGhost("player") then
-            return true;
-        end
-    end,
+        if not UnitExists("target")
+		 or (UnitExists("target")
+		 and (not UnitCanAttack("player", "target")
+		 or UnitIsDeadOrGhost("target")))
+		 or UnitChannelInfo("player")
+		 or UnitIsDeadOrGhost("player")
+		 or IsMounted() then
+			return true;
+		end
+	end,
+
+    ["Auto Target"] = function()
+		if UnitAffectingCombat("player")
+		 and ((ni.unit.exists("target")
+		 and UnitIsDeadOrGhost("target")
+		 and not UnitCanAttack("player", "target"))
+		 or not ni.unit.exists("target")) then
+			ni.player.runtext("/targetenemy")
+		end
+	end,
 
     ["Start Attack"] = function()
         if ni.unit.exists("target")
