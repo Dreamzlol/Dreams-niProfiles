@@ -1,11 +1,12 @@
 --------------------------------
 -- Mage - Fire PvE
--- Version - 1.0.1
+-- Version - 1.0.2
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Added Scorch for crit debuff if you have no warlock, Added Fire Blast while moving
+-- 1.0.2 Prevent clipping / double casting of Scorch
 --------------------------------
 local ni = ...
 
@@ -68,7 +69,7 @@ local abilities = {
         if ni.spell.available("Evocation")
         and UnitAffectingCombat("player")
         and ni.player.power() < 20
-        and not ni.player.movingfor(2) then
+        and not ni.unit.ismoving("player") then
             ni.spell.cast("Evocation")
         end
     end,
@@ -76,6 +77,7 @@ local abilities = {
     ["Scorch"] = function()
         if not ni.unit.debuff("target", "Shadow Mastery")
         and not ni.unit.debuff("target", "Improved Scorch")
+        and not ni.unit.iscasting("player")
         and ni.spell.available("Scorch", "target") then
             ni.spell.cast("Scorch", "target")
         end
