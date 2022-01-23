@@ -68,7 +68,7 @@ local abilities = {
         if ni.spell.available("Evocation")
         and UnitAffectingCombat("player")
         and ni.player.power() < 20
-        and not ni.unit.ismoving("player") then
+        and not ni.player.movingfor(2) then
             ni.spell.cast("Evocation")
         end
     end,
