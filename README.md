@@ -1,4 +1,4 @@
-# ni Profiles for Wrath of the Lich King 3.3.5
+# DreamsRotation - PvE Profiles for ni (3.3.5)
 ## Developed Profiles
 |Class           |Talent Tree                    |Mode                         |
 |----------------|-------------------------------|-----------------------------|
