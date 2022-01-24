@@ -25,22 +25,22 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(6603)) .. ":26:26\124t Use Auto Target",
-        tooltip = "Use the Auto Target feature, if you in combat it will Auto Target the closest enemy around you",
+        text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Use Auto Target",
+        tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
         enabled = true,
         key = "getSetting_AutoTarget",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43046)) .. ":26:26\124t Use Molten Armor",
-        tooltip = "Use Molten Armor",
+        tooltip = "Use Molten Armor if not active",
         enabled = true,
         key = "getSetting_MoltenArmor",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43002)) .. ":26:26\124t Use Arcane Brilliance",
-        tooltip = "Use Arcane Brilliance",
+        tooltip = "Use Arcane Brilliance if not active",
         enabled = true,
         key = "getSetting_ArcaneBrilliance",
     },
@@ -84,7 +84,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(12472)) .. ":26:26\124t Use Icy Veins at Arcane Blast stacks",
-        tooltip = "Use Icy Veins at defined Arcane blast stacks",
+        tooltip = "Use Icy Veins if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
         key = "getSetting_IcyVeins",
@@ -92,7 +92,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(55342)) .. ":26:26\124t Use Mirror Image at Arcane Blast stacks",
-        tooltip = "Use Mirror Image at defined Arcane blast stacks",
+        tooltip = "Use Mirror Image if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
         key = "getSetting_MirrorImage",
@@ -100,7 +100,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(12042)) .. ":26:26\124t Use Arcane Power at Arcane Blast stacks",
-        tooltip = "Use Arcane Power at defined Arcane blast stacks",
+        tooltip = "Use Arcane Power if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
         key = "getSetting_ArcanePower",
@@ -108,7 +108,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(12043)) .. ":26:26\124t Use Presence of Mind at Arcane Blast stacks",
-        tooltip = "Use Presence of Mind at defined Arcane blast stacks",
+        tooltip = "Use Presence of Mind if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 2,
         key = "getSetting_PresenceOfMind",
@@ -116,7 +116,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(42846)) .. ":26:26\124t Use Arcane Missiles at Arcane Blast stacks",
-        tooltip = "Use Arcane Missiles at defined Arcane blast stacks",
+        tooltip = "Use Arcane Missiles and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 4,
         key = "getSetting_ArcaneMissiles",

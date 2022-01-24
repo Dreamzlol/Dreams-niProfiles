@@ -1,5 +1,5 @@
 --------------------------------
--- DreamsRotation Mage - Fire PvE
+-- DreamsRotation - Mage - Fire PvE
 -- Version - 1.0.3
 -- Author - Dreams
 --------------------------------
@@ -26,22 +26,22 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(6603)) .. ":26:26\124t Use Auto Target",
-        tooltip = "Use the Auto Target feature, if you in combat it will Auto Target the closest enemy around you",
+        text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Use Auto Target",
+        tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
         enabled = true,
         key = "getSetting_AutoTarget",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43046)) .. ":26:26\124t Use Molten Armor",
-        tooltip = "Use Molten Armor",
+        tooltip = "Use Molten Armor if not active",
         enabled = true,
         key = "getSetting_MoltenArmor",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43002)) .. ":26:26\124t Use Arcane Brilliance",
-        tooltip = "Use Arcane Brilliance",
+        tooltip = "Use Arcane Brilliance if not active",
         enabled = true,
         key = "getSetting_ArcaneBrilliance",
     },
@@ -78,7 +78,7 @@ local items = {
     {
         type = "entry",
         text = "        \124T" .. select(3, GetSpellInfo(42859)) .. ":26:26\124t Use Scorch if no crit debuff on target",
-        tooltip = "Use Scorch if no Crit Debuff on Boss, dosent cast it when you have a Warlock applies it",
+        tooltip = "Use Scorch if no crit debuff on boss is active and no warlock applies it",
         enabled = true,
         key = "getSetting_Scorch",
     },

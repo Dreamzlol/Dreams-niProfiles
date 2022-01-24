@@ -22,12 +22,12 @@ local items = {
     },
     {
         type = "title",
-        text = "|cff71C671Rotation Settings",
+        text = "|cff71C671Main Settings",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48168)) .. ":26:26\124t Use Inner Fire",
-        tooltip = "Use Inner Fire",
+        tooltip = "Use Inner Fire if not active",
         enabled = true,
         key = "getSetting_InnerFire",
     },
@@ -50,7 +50,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Use Shadowfiend if below Mana %",
-        tooltip = "Use Shadowfiend on target if you below Mana Percentage",
+        tooltip = "Use Shadowfiend on target if you below mana Percentage",
         enabled = true,
         value = 40,
         key = "getSetting_Shadowfiend",
@@ -70,23 +70,30 @@ local items = {
         key = "getSetting_DispellMagic",
     },
     {
+        type = "separator",
+    },
+    {
+        type = "title",
+        text = "|cff71C671Healing Spells Settings",
+    },
+    {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Use Renew",
-        tooltip = "Uses Renew and keeps it active on tanks",
+        tooltip = "Use Renew and keeps it active on tanks",
         enabled = true,
         key = "getSetting_Renew",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Use Prayer of Mending",
-        tooltip = "Uses Prayer of Mending on tanks",
+        tooltip = "Use Prayer of Mending on tanks",
         enabled = true,
         key = "getSetting_PrayerOfMending",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Use Prayer of Healing if below Health %",
-        tooltip = "Uses Prayer of Healing if more than 4 raid member are below health percentage",
+        tooltip = "Use Prayer of Healing if more than 4 raid member are below health percentage",
         enabled = true,
         value = 60,
         key = "getSetting_PrayerOfHealing",
@@ -102,7 +109,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Use Flash Heal if below Health %",
-        tooltip = "Use Flash Heal if raid member is below health percentage",
+        tooltip = "Use Flash Heal if a raid member is below health percentage",
         enabled = true,
         value = 80,
         key = "getSetting_FlashHeal",
@@ -110,7 +117,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Use Power Word: Shield",
-        tooltip = "Use Power Word: Shield on all raid members if they have more than health percentage",
+        tooltip = "Use Power Word: Shield on all raid member if they have more than at the defined health percentage",
         enabled = true,
         value = 60,
         key = "getSetting_PowerWordShield",

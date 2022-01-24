@@ -27,21 +27,22 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(6603)) .. ":26:26\124t Use Auto Target",
-        tooltip = "Use the Auto Target feature, if you in combat it will Auto Target the closest enemy around you",
+        text = "\124T" .. select(3, GetSpellInfo(2764)) .. ":26:26\124t Use Auto Target",
+        tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
         enabled = true,
         key = "getSetting_AutoTarget",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(57934)) .. ":26:26\124t Use Tricks of the Trade on Focus",
-        tooltip = "Use Tricks of the Trade on your focus target, be sure too have your focus on main tank or rogue buddy",
+        text = "\124T" .. select(3, GetSpellInfo(57934)) .. ":26:26\124t Use Tricks of the Trade on Focus Target",
+        tooltip = "Use Tricks of the Trade on your focus target be sure too have your focus on main tank or on a other rogue",
         enabled = true,
         key = "getSetting_TricksOfTheTrade",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(54758)) .. ":26:26\124t Use Engineer Glove Enchant (Hyperspeed Accelerators)",
+        text = "\124T" .. select(3, GetSpellInfo(54758)) ..
+            ":26:26\124t Use Engineer Glove Enchant (Hyperspeed Accelerators)",
         tooltip = "Use Engineer Glove Enchant if your target is a boss",
         enabled = true,
         key = "getSetting_HyperspeedAccelerators",
@@ -62,34 +63,34 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(6774)) .. ":26:26\124t Use Slice and Dice at Combopoints",
-        tooltip = "Use Slice and Dice at the defined Combopoints",
+        text = "\124T" .. select(3, GetSpellInfo(6774)) .. ":26:26\124t Use Slice and Dice at or more Combopoints",
+        tooltip = "Use Slice and Dice if you have the amount or more than the defined combopoints",
         enabled = true,
-        key = "getSetting_SliceAndDice",
         value = 2,
+        key = "getSetting_SliceAndDice",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48672)) .. ":26:26\124t Use Rupture at Combopoints",
-        tooltip = "Use Rupture at the defined Combopoints",
+        text = "\124T" .. select(3, GetSpellInfo(48672)) .. ":26:26\124t Use Rupture at or more Combopoints",
+        tooltip = "Use Rupture if you have the amount or more than the defined combopoints",
         enabled = true,
-        key = "getSetting_Rupture",
         value = 2,
+        key = "getSetting_Rupture",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48668)) .. ":26:26\124t Use Eviscerate at Combopoints",
-        tooltip = "Use Eviscerate at the defined Combopoints",
+        tooltip = "Use Eviscerate if you have the amount of the defined combopoints",
         enabled = true,
-        key = "getSetting_Eviscerate",
         value = 5,
+        key = "getSetting_Eviscerate",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(51690)) .. ":26:26\124t Use Killing Spree",
         tooltip = "Use Killing Spree when your target is a boss",
-        enabled = true,
         key = "getSetting_KillingSpree",
+        enabled = true,
     },
     {
         type = "entry",
@@ -158,6 +159,7 @@ local abilities = {
             and not UnitCanAttack("player", "target"))
             or not ni.unit.exists("target")) then
                 ni.player.runtext("/targetenemy")
+                return true;
             end
         end
 	end,
@@ -168,7 +170,8 @@ local abilities = {
         and not UnitIsDeadOrGhost("target")
         and UnitAffectingCombat("player")
         and not IsCurrentSpell(6603) then
-            ni.spell.cast(6603);
+            ni.spell.cast(6603)
+            return true;
         end
     end,
 
@@ -179,6 +182,7 @@ local abilities = {
             and ni.spell.available("Tricks of the Trade")
             and ni.unit.exists("focus") and ni.player.power() < 85 then
                 ni.spell.cast("Tricks of the Trade", "focus")
+                return true;
             end
         end
     end,
@@ -189,6 +193,7 @@ local abilities = {
             if ni.unit.isboss("target")
             and ni.player.slotcd(10) == 0 then
                 ni.player.useinventoryitem(10)
+                return true;
             end
         end
     end,
@@ -202,6 +207,7 @@ local abilities = {
             and ni.unit.buff("player", "Slice and Dice")
             and ni.player.power() < 60 then
                 ni.spell.cast("Killing Spree", "target")
+                return true;
             end
         end
     end,
@@ -214,6 +220,7 @@ local abilities = {
             and ni.unit.debuff("target", "Rupture", "player")
             and ni.unit.buff("player", "Slice and Dice") then
                 ni.spell.cast("Blade Flurry", "target")
+                return true;
             end
         end
     end,
@@ -227,6 +234,7 @@ local abilities = {
             and ni.unit.buff("player", "Slice and Dice")
             and ni.player.power() < 40 then
                 ni.spell.cast("Adrenaline Rush", "target")
+                return true;
             end
         end
     end,
@@ -250,6 +258,7 @@ local abilities = {
             and GetComboPoints("player", "target") >= value
             and ni.unit.debuffremaining("target", "Rupture", "player") <= 2 then
                 ni.spell.cast("Rupture", "target")
+                return true;
             end
         end
     end,
@@ -260,6 +269,7 @@ local abilities = {
             if ni.spell.available("Eviscerate")
             and GetComboPoints("player", "target") == value then
                 ni.spell.cast("Eviscerate", "target")
+                return true;
             end
         end
     end,
@@ -269,6 +279,7 @@ local abilities = {
         if enabled then
             if ni.spell.available("Sinister Strike") then
                 ni.spell.cast("Sinister Strike", "target")
+                return true;
             end
         end
     end,
