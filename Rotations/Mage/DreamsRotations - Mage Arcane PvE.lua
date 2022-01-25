@@ -1,12 +1,13 @@
 --------------------------------
 -- DreamsRotation - Mage Arcane PvE
--- Version - 1.0.2
+-- Version - 1.0.3
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Added Auto Target
 -- 1.0.2 Added GUI
+-- 1.0.3 Improved rotation
 --------------------------------
 local ni = ...
 
@@ -28,28 +29,28 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Use Auto Target",
         tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
         enabled = true,
-        key = "getSetting_AutoTarget",
+        key = "autotarget",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43046)) .. ":26:26\124t Use Molten Armor",
         tooltip = "Use Molten Armor if not active",
         enabled = true,
-        key = "getSetting_MoltenArmor",
+        key = "moltenarmor",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43002)) .. ":26:26\124t Use Arcane Brilliance",
         tooltip = "Use Arcane Brilliance if not active",
         enabled = true,
-        key = "getSetting_ArcaneBrilliance",
+        key = "arcanebrilliance",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(42985)) .. ":26:26\124t Use Conjure Mana Gem",
-        tooltip = "Use Conjure Mana Gem if you have no mana sapphire left",
+        tooltip = "Use Conjure Mana Gem if you have no mana sapphire left and out of combat",
         enabled = true,
-        key = "getSetting_ConjureManaGem",
+        key = "conjuremanagem",
     },
     {
         type = "entry",
@@ -57,7 +58,7 @@ local items = {
         tooltip = "Use Mana Sapphire at mana percentage",
         enabled = true,
         value = 85,
-        key = "getSetting_ManaSapphire",
+        key = "manasapphire",
     },
     {
         type = "entry",
@@ -65,7 +66,7 @@ local items = {
         tooltip = "Use Evocation at mana percentage",
         enabled = true,
         value = 20,
-        key = "getSetting_Evocation",
+        key = "evocation",
     },
     {
         type = "separator",
@@ -79,7 +80,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(42897)) .. ":26:26\124t Use Arcane Blast",
         tooltip = "Use Arcane Blast",
         enabled = true,
-        key = "getSetting_ArcaneBlast",
+        key = "arcaneblast",
     },
     {
         type = "entry",
@@ -87,7 +88,7 @@ local items = {
         tooltip = "Use Icy Veins if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
-        key = "getSetting_IcyVeins",
+        key = "icyveins",
     },
     {
         type = "entry",
@@ -95,7 +96,7 @@ local items = {
         tooltip = "Use Mirror Image if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
-        key = "getSetting_MirrorImage",
+        key = "mirrorimage",
     },
     {
         type = "entry",
@@ -103,15 +104,15 @@ local items = {
         tooltip = "Use Arcane Power if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 3,
-        key = "getSetting_ArcanePower",
+        key = "arcanepower",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(12043)) .. ":26:26\124t Use Presence of Mind at Arcane Blast stacks",
         tooltip = "Use Presence of Mind if your target is a boss and has the amount of the defined Arcane Blast stacks",
         enabled = true,
-        value = 2,
-        key = "getSetting_PresenceOfMind",
+        value = 1,
+        key = "presenceofmind",
     },
     {
         type = "entry",
@@ -119,7 +120,7 @@ local items = {
         tooltip = "Use Arcane Missiles and has the amount of the defined Arcane Blast stacks",
         enabled = true,
         value = 4,
-        key = "getSetting_ArcaneMissiles",
+        key = "arcanemissiles",
     },
 }
 
@@ -141,6 +142,26 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Mage Arcane PvE");
 end
 
+-- Spells
+local MoltenArmor = GetSpellInfo(43046)
+local ArcaneBrilliance = GetSpellInfo(43002)
+local ConjureManaGem = GetSpellInfo(42985)
+local Evocation = GetSpellInfo(12051)
+local IcyVeins = GetSpellInfo(12472)
+local MirrorImage = GetSpellInfo(55342)
+local ArcanePower = GetSpellInfo(12042)
+local PresenceOfMind = GetSpellInfo(12043)
+local ArcaneMissiles = GetSpellInfo(42846)
+local ArcaneMissilesBuff = GetSpellInfo(44401)
+local ArcaneBlast = GetSpellInfo(42897)
+local ArcaneBlastStacks = GetSpellInfo(36032)
+
+-- Items
+local ManaSapphire = GetItemInfo(33312)
+local ArcanePowder = GetItemInfo(17020)
+local Food = GetSpellInfo(45548)
+local Drink = GetSpellInfo(57073)
+
 local queue = {
     "Molten Armor",
     "Arcane Brilliance",
@@ -149,57 +170,68 @@ local queue = {
     "Auto Target",
     "Mana Sapphire",
     "Evocation",
+    "Arcane Power",
     "Icy Veins",
     "Mirror Image",
-    "Arcane Power",
     "Presence of Mind",
     "Arcane Missiles",
-    "Arcane Blast"
+    "Arcane Blast",
 }
 
 local abilities = {
     ["Molten Armor"] = function()
-        local _, enabled = GetSetting("getSetting_MoltenArmor")
+        local _, enabled = GetSetting("moltenarmor")
         if enabled then
-            if ni.spell.available("Molten Armor")
-            and not ni.unit.buff("player", "Molten Armor") then
-                ni.spell.cast("Molten Armor", "player")
+            if ni.spell.available(MoltenArmor)
+            and not ni.unit.buff("player", MoltenArmor) then
+                ni.spell.cast(MoltenArmor)
+                return true;
             end
         end
     end,
 
     ["Arcane Brilliance"] = function()
-        local _, enabled = GetSetting("getSetting_ArcaneBrilliance")
+        local _, enabled = GetSetting("arcanebrilliance")
         if enabled then
-            if ni.spell.available("Arcane Brilliance")
-            and not ni.unit.buff("player", "Arcane Brilliance")
-            and ni.player.hasitem(17020) then
-                ni.spell.cast("Arcane Brilliance", "player")
+            if ni.spell.available(ArcaneBrilliance)
+            and not ni.unit.buff("player", ArcaneBrilliance)
+            and ni.player.hasitem(ArcanePowder) then
+                ni.spell.cast(ArcaneBrilliance)
+                return true;
             end
         end
     end,
 
     ["Conjure Mana Gem"] = function()
-        local _, enabled = GetSetting("getSetting_ConjureManaGem")
+        local _, enabled = GetSetting("conjuremanagem")
         if enabled then
-            if ni.spell.available("Conjure Mana Gem")
-            and not ni.player.hasitem(33312)
+            if ni.spell.available(ConjureManaGem)
+            and not ni.player.hasitem(ManaSapphire)
+            and not ni.player.ismoving("player")
             and not UnitAffectingCombat("player") then
-                ni.spell.cast("Conjure Mana Gem")
+                ni.spell.cast(ConjureManaGem)
+                return true;
             end
         end
     end,
 
     ["Pause Rotation"] = function()
         if IsMounted()
+        or UnitIsDeadOrGhost("player")
+        or UnitIsDeadOrGhost("target")
+        or UnitUsingVehicle("player")
+        or UnitInVehicle("player")
         or not UnitAffectingCombat("player")
-        or UnitIsDeadOrGhost("player") then
+        or ni.unit.ischanneling("player")
+        or ni.unit.iscasting("player")
+        or ni.unit.buff("player", Food)
+        or ni.unit.buff("player", Drink) then
             return true;
         end
     end,
 
     ["Auto Target"] = function()
-        local _, enabled = GetSetting("getSetting_AutoTarget")
+        local _, enabled = GetSetting("autotarget")
         if enabled then
             if UnitAffectingCombat("player")
             and ((ni.unit.exists("target")
@@ -207,99 +239,104 @@ local abilities = {
             and not UnitCanAttack("player", "target"))
             or not ni.unit.exists("target")) then
                 ni.player.runtext("/targetenemy")
+                return true;
             end
         end
-	end,
+    end,
 
     ["Mana Sapphire"] = function()
-        local value, enabled = GetSetting("getSetting_ManaSapphire")
+        local value, enabled = GetSetting("manasapphire")
         if enabled then
-            if ni.player.itemcd(33312) == 0
-            and ni.player.power() < value
-            and not ni.unit.ischanneling("player") then
-                ni.player.useitem(33312)
+            if ni.player.itemcd(ManaSapphire) == 0
+            and ni.player.power() < value then
+                ni.player.useitem(ManaSapphire)
+                return true;
             end
         end
     end,
 
     ["Evocation"] = function()
-        local _, enabled = GetSetting("getSetting_Evocation")
+        local value, enabled = GetSetting("evocation")
         if enabled then
-            if ni.spell.available("Evocation")
-            and UnitAffectingCombat("player")
-            and ni.player.power() < 20
-            and not ni.player.movingfor(3) then
-                ni.spell.cast("Evocation")
+            if ni.spell.available(Evocation)
+            and ni.player.power() < value
+            and not ni.unit.ismoving("player") then
+                ni.spell.cast(Evocation)
+                return true;
             end
         end
     end,
 
     ["Mirror Image"] = function()
-        local value, enabled = GetSetting("getSetting_MirrorImage")
+        local value, enabled = GetSetting("mirrorimage")
         if enabled then
-            if ni.spell.available("Mirror Image")
+            if ni.spell.available(MirrorImage)
             and ni.unit.isboss("target")
-            and not ni.unit.ischanneling("player")
-            and ni.unit.debuffstacks("player", 36032) >= value then
-                ni.spell.cast("Mirror Image")
+            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
+                ni.spell.cast(MirrorImage)
+                return true;
             end
         end
     end,
 
     ["Icy Veins"] = function()
-        local value, enabled = GetSetting("getSetting_IcyVeins")
+        local value, enabled = GetSetting("icyveins")
         if enabled then
-            if ni.spell.available("Icy Veins")
+            if ni.spell.available(IcyVeins)
             and ni.unit.isboss("target")
-            and not ni.unit.ischanneling("player")
-            and ni.unit.debuffstacks("player", 36032) >= value then
-                ni.spell.cast("Icy Veins")
+            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
+                ni.spell.cast(IcyVeins)
+                return true;
             end
         end
     end,
 
     ["Arcane Power"] = function()
-        local value, enabled = GetSetting("getSetting_ArcanePower")
+        local value, enabled = GetSetting("arcanepower")
         if enabled then
-            if ni.spell.available("Arcane Power")
+            if ni.spell.available(ArcanePower)
             and ni.unit.isboss("target")
-            and not ni.unit.ischanneling("player")
-            and ni.unit.debuffstacks("player", 36032) >= value then
-                ni.spell.cast("Arcane Power")
+            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
+                ni.spell.cast(ArcanePower)
+                return true;
             end
         end
     end,
 
     ["Presence of Mind"] = function()
-        local value, enabled = GetSetting("getSetting_PresenceOfMind")
+        local value, enabled = GetSetting("presenceofmind")
         if enabled then
-            if ni.spell.available("Presence of Mind")
+            if ni.spell.available(PresenceOfMind)
             and ni.unit.isboss("target")
-            and not ni.unit.ischanneling("player")
-            and ni.unit.debuffstacks("player", 36032) >= value then
-                ni.spell.cast("Presence of Mind", "target")
+            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
+                ni.spell.cast(PresenceOfMind)
+                return true;
             end
         end
     end,
 
     ["Arcane Missiles"] = function()
-        local value, enabled = GetSetting("getSetting_ArcaneMissiles")
+        local value, enabled = GetSetting("arcanemissiles")
         if enabled then
-            if ni.spell.available("Arcane Missiles")
-            and ni.unit.debuffstacks("player", 36032) == value
-            and ni.unit.buff("player", "Missile Barrage")
-            and not ni.unit.ischanneling("player") then
-                ni.spell.cast("Arcane Missiles", "target")
+            if ni.spell.available(ArcaneMissiles)
+            and ni.unit.debuffstacks("player", ArcaneBlastStacks) == value
+            and ni.spell.valid("target", ArcaneMissiles, true, true)
+            and ni.unit.buff("player", ArcaneMissilesBuff)
+            and not ni.unit.ismoving("player") then
+                ni.spell.cast(ArcaneMissiles, "target")
+                return true;
             end
         end
     end,
 
     ["Arcane Blast"] = function()
-        local _, enabled = GetSetting("getSetting_ArcaneBlast")
+        local _, enabled = GetSetting("arcaneblast")
         if enabled then
-            if ni.spell.available("Arcane Blast")
-            and not ni.unit.ischanneling("player") then
-                ni.spell.cast("Arcane Blast", "target")
+            if ni.spell.available(ArcaneBlast)
+            and ni.spell.valid("target", ArcaneBlast, true, true)
+            and not ni.unit.ismoving("player") then
+                ni.spell.cast(ArcaneBlast, "target")
+                return true;
             end
         end
     end,

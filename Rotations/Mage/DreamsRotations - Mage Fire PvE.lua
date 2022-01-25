@@ -147,6 +147,29 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Mage Fire PvE");
 end
 
+-- Spells
+local MoltenArmor = GetSpellInfo(43046)
+local ArcaneBrilliance = GetSpellInfo(43002)
+local ConjureManaGem = GetSpellInfo(42985)
+local Evocation = GetSpellInfo(12051)
+local MirrorImage = GetSpellInfo(55342)
+local Scorch = GetSpellInfo(42859)
+local FireBlast = GetSpellInfo(42873)
+local LivingBomb = GetSpellInfo(55360)
+local Pyroblast = GetSpellInfo(42891)
+local Combustion = GetSpellInfo(11129)
+local Fireball = GetSpellInfo(42833)
+local ImprovedScorch = GetSpellInfo(22959)
+local ShadowMastery = GetSpellInfo(17800)
+local WintersChill = GetSpellInfo(12579)
+local HotStreak = GetSpellInfo(48108)
+
+-- Items
+local ManaSapphire = GetItemInfo(33312)
+local ArcanePowder = GetItemInfo(17020)
+local Food = GetSpellInfo(45548)
+local Drink = GetSpellInfo(57073)
+
 local queue = {
     "Molten Armor",
     "Arcane Brilliance",
@@ -165,58 +188,42 @@ local queue = {
 }
 
 local abilities = {
-    --------------------------------
-    -- Molten Armor - 43046
-    --------------------------------
     ["Molten Armor"] = function()
         local _, enabled = GetSetting("moltenarmor")
         if enabled then
-            if ni.spell.available(43046)
-            and not ni.unit.buff("player", 43046) then
-                ni.spell.cast(43046)
+            if ni.spell.available(MoltenArmor)
+            and not ni.unit.buff("player", MoltenArmor) then
+                ni.spell.cast(MoltenArmor)
                 return true;
-                
             end
         end
     end,
 
-    --------------------------------
-    -- Arcane Brilliance - 43002
-    -- Arcane Powder - 17020
-    --------------------------------
     ["Arcane Brilliance"] = function()
         local _, enabled = GetSetting("arcanebrilliance")
         if enabled then
-            if ni.spell.available(43002)
-            and not ni.unit.buff("player", 43002)
-            and ni.player.hasitem(17020) then
-                ni.spell.cast(43002)
+            if ni.spell.available(ArcaneBrilliance)
+            and not ni.unit.buff("player", ArcaneBrilliance)
+            and ni.player.hasitem(ArcanePowder) then
+                ni.spell.cast(ArcaneBrilliance)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Conjure Mana Gem - 42985
-    -- Mana Sapphire - 33312
-    --------------------------------
     ["Conjure Mana Gem"] = function()
         local _, enabled = GetSetting("conjuremanagem")
         if enabled then
-            if ni.spell.available(42985)
-            and not ni.player.hasitem(33312)
+            if ni.spell.available(ConjureManaGem)
+            and not ni.player.hasitem(ManaSapphire)
             and not ni.player.ismoving("player")
             and not UnitAffectingCombat("player") then
-                ni.spell.cast(42985)
+                ni.spell.cast(ConjureManaGem)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Food - 45548
-    -- Drink - 57073
-    --------------------------------
     ["Pause Rotation"] = function()
         if IsMounted()
         or UnitIsDeadOrGhost("player")
@@ -226,8 +233,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", 45548)
-        or ni.unit.buff("player", 57073) then
+        or ni.unit.buff("player", Food)
+        or ni.unit.buff("player", Drink) then
             return true;
         end
     end,
@@ -244,142 +251,111 @@ local abilities = {
                 return true;
             end
         end
-	end,
+    end,
 
-    --------------------------------
-    -- Mana Sapphire - 33312
-    --------------------------------
     ["Mana Sapphire"] = function()
         local value, enabled = GetSetting("manasapphire")
         if enabled then
-            if ni.player.itemcd(33312) == 0
+            if ni.player.itemcd(ManaSapphire) == 0
             and ni.player.power() < value then
-                ni.player.useitem(33312)
+                ni.player.useitem(ManaSapphire)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Evocation - 12051
-    --------------------------------
     ["Evocation"] = function()
         local value, enabled = GetSetting("evocation")
         if enabled then
-            if ni.spell.available(12051)
+            if ni.spell.available(Evocation)
             and ni.player.power() < value
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(12051)
+                ni.spell.cast(Evocation)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Scorch - 42859
-    -- Improved Scorch - 22959
-    -- Shadow Mastery - 17800
-    -- Winters Chill - 12579
-    --------------------------------
     ["Scorch"] = function()
         local _, enabled = GetSetting("scorch")
         if enabled then
-            if ni.spell.available(42859)
-            and ni.spell.valid("target", 42859, true, true)
-            and not ni.unit.debuff("target", 22959)
-            and not ni.unit.debuff("target", 17800)
-            and not ni.unit.debuff("target", 12579)
+            if ni.spell.available(Scorch)
+            and ni.spell.valid("target", Scorch, true, true)
+            and not ni.unit.debuff("target", ImprovedScorch)
+            and not ni.unit.debuff("target", ShadowMastery)
+            and not ni.unit.debuff("target", WintersChill)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(42859, "target")
+                ni.spell.cast(Scorch, "target")
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Fire Blast - 42873
-    --------------------------------
     ["Fire Blast"] = function()
         local _, enabled = GetSetting("fireblast")
         if enabled then
-            if ni.spell.available(42873)
-            and ni.spell.valid("target", 42873, true, true)
+            if ni.spell.available(FireBlast)
+            and ni.spell.valid("target", FireBlast, true, true)
             and ni.unit.ismoving("player") then
-                ni.spell.cast(42873, "target")
+                ni.spell.cast(FireBlast, "target")
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Living Bomb - 55360
-    --------------------------------
     ["Living Bomb"] = function()
         local _, enabled = GetSetting("livingbomb")
         if enabled then
-            if ni.spell.available(55360)
-            and ni.spell.valid("target", 55360, true, true)
-            and not ni.unit.debuff("target", 55360, "player") then
-                ni.spell.cast(55360, "target")
+            if ni.spell.available(LivingBomb)
+            and ni.spell.valid("target", LivingBomb, true, true)
+            and not ni.unit.debuff("target", LivingBomb, "player") then
+                ni.spell.cast(LivingBomb, "target")
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Pyroblast - 42891
-    -- Hot Streak - 48108
-    --------------------------------
     ["Pyroblast"] = function()
         local _, enabled = GetSetting("pyroblast")
         if enabled then
-            if ni.spell.available(42891)
-            and ni.spell.valid("target", 42891, true, true)
-            and ni.unit.buff("player", 48108) then
-                ni.spell.cast(42891, "target")
+            if ni.spell.available(Pyroblast)
+            and ni.spell.valid("target", Pyroblast, true, true)
+            and ni.unit.buff("player", HotStreak) then
+                ni.spell.cast(Pyroblast, "target")
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Mirror Image - 55342
-    --------------------------------
     ["Mirror Image"] = function()
         local _, enabled = GetSetting("mirrorimage")
         if enabled then
-            if ni.spell.available(55342)
+            if ni.spell.available(MirrorImage)
             and ni.unit.isboss("target") then
-                ni.spell.cast(55342)
+                ni.spell.cast(MirrorImage)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Combustion - 11129
-    --------------------------------
     ["Combustion"] = function()
         local _, enabled = GetSetting("combustion")
         if enabled then
-            if ni.spell.available(11129)
+            if ni.spell.available(Combustion)
             and ni.unit.isboss("target") then
-                ni.spell.cast(11129)
+                ni.spell.cast(Combustion)
                 return true;
             end
         end
     end,
 
-    --------------------------------
-    -- Fireball - 42833
-    --------------------------------
     ["Fireball"] = function()
         local _, enabled = GetSetting("fireball")
         if enabled then
-            if ni.spell.available(42833)
-            and ni.spell.valid("target", 42833, true, true)
+            if ni.spell.available(Fireball)
+            and ni.spell.valid("target", Fireball, true, true)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(42833, "target")
+                ni.spell.cast(Fireball, "target")
                 return true;
             end
         end
