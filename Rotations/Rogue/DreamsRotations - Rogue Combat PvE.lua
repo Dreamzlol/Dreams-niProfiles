@@ -140,8 +140,11 @@ local SinisterStrike = GetSpellInfo(48638)
 -- Items
 local Food = GetSpellInfo(45548)
 local Drink = GetSpellInfo(57073)
+local InstantPoison = GetItemInfo(43231)
+local DeadlyPoison = GetItemInfo(43233)
 
 local queue = {
+    "Poisons",
     "Pause Rotation",
     "Auto Target",
     "Start Attack",
@@ -157,6 +160,20 @@ local queue = {
 }
 
 local abilities = {
+    ["Poisons"] = function ()
+        local mainHand,_,_,offHand,_,_ = GetWeaponEnchantInfo()
+
+        if not mainHand then
+            UseItemByName(InstantPoison, "player")
+            PickupInventoryItem(16)
+        end
+
+        if not offHand then
+            UseItemByName(DeadlyPoison, "player")
+            PickupInventoryItem(17)
+        end
+    end,
+
     ["Pause Rotation"] = function()
         if IsMounted()
         or UnitIsDeadOrGhost("player")
