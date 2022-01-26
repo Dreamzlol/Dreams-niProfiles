@@ -228,7 +228,7 @@ local abilities = {
             and ni.unit.isboss("target")
             and ni.unit.debuff("target", Rupture, "player")
             and ni.unit.buff("player", SliceAndDice)
-            and ni.player.power() < 60 then
+            and ni.player.power() < 70 then
                 ni.spell.cast(KillingSpree, "target")
                 return true;
             end
@@ -255,7 +255,7 @@ local abilities = {
             and ni.unit.isboss("target")
             and ni.unit.debuff("target", Rupture, "player")
             and ni.unit.buff("player", SliceAndDice)
-            and ni.player.power() < 40 then
+            and ni.player.power() < 50 then
                 ni.spell.cast(AdrenalineRush)
                 return true;
             end
