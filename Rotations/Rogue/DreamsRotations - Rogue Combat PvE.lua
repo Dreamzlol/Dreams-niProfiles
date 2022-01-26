@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotation Rogue - Combat PvE
--- Version - 1.0.5
+-- Version - 1.0.6
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -10,6 +10,7 @@
 -- 1.0.3 Added Auto Target
 -- 1.0.4 Added GUI
 -- 1.0.5 Improved overall rotation
+-- 1.0.6 Added Poisons
 --------------------------------
 local ni = ...
 
@@ -32,6 +33,13 @@ local items = {
         tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. GetItemIcon(43233) .. ":26:26\124t Use Poisons on Weapons",
+        tooltip = "Use Instant Poison on Mainhand and Deadly Poison on Offhand",
+        enabled = true,
+        key = "poisons",
     },
     {
         type = "entry",
@@ -143,6 +151,7 @@ local Drink = GetSpellInfo(57073)
 local InstantPoison = GetItemInfo(43231)
 local DeadlyPoison = GetItemInfo(43233)
 
+
 local queue = {
     "Poisons",
     "Pause Rotation",
@@ -160,17 +169,31 @@ local queue = {
 }
 
 local abilities = {
-    ["Poisons"] = function ()
-        local mainHand,_,_,offHand,_,_ = GetWeaponEnchantInfo()
+    ["Poisons"] = function()
+        local _, enabled = GetSetting("poisons")
+        if enabled then
+            local mainHand,_,_,offHand,_,_ = GetWeaponEnchantInfo()
 
-        if not mainHand then
-            UseItemByName(InstantPoison, "player")
-            PickupInventoryItem(16)
-        end
+            if PoisonCastTime and GetTime() - PoisonCastTime > 4 then
+                PoisonCastTime = nil
+            end
 
-        if not offHand then
-            UseItemByName(DeadlyPoison, "player")
-            PickupInventoryItem(17)
+            if not UnitAffectingCombat("player")
+            and not PoisonCastTime then
+                PoisonCastTime = GetTime()
+
+                if not mainHand
+                and ni.player.hasitem(InstantPoison) then
+                    ni.player.useitem(InstantPoison)
+                    ni.player.useinventoryitem(16)
+                end
+
+                if not offHand
+                and ni.player.hasitem(DeadlyPoison) then
+                    ni.player.useitem(DeadlyPoison)
+                    ni.player.useinventoryitem(17)
+                end
+            end
         end
     end,
 
