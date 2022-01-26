@@ -120,7 +120,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Use Power Word: Shield",
         tooltip = "Use Power Word: Shield on all raid members if they have more than the defined health percentage",
         enabled = true,
-        value = 60,
+        value = 40,
         key = "powerwordshield",
     },
 }
@@ -303,7 +303,8 @@ local abilities = {
             for i = 1, #ni.members do
                 if count > 4
                 and ni.spell.available(PrayerOfHealing)
-                and ni.spell.valid(ni.members[i].unit, PrayerOfHealing, false, true, true) then
+                and ni.spell.valid(ni.members[i].unit, PrayerOfHealing, false, true, true)
+                and not ni.unit.ismoving("player") then
                     ni.spell.cast(PrayerOfHealing, ni.members[i].unit)
                 end
             end
@@ -316,7 +317,8 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(Penance)
-                and ni.spell.valid(ni.members[i].unit, Penance, false, true, true) then
+                and ni.spell.valid(ni.members[i].unit, Penance, false, true, true)
+                and not ni.unit.ismoving("player") then
                     ni.spell.cast(Penance, ni.members[i].unit)
                 end
             end
@@ -329,7 +331,8 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(FlashHeal)
-                and ni.spell.valid(ni.members[i].unit, FlashHeal, false, true, true) then
+                and ni.spell.valid(ni.members[i].unit, FlashHeal, false, true, true)
+                and not ni.unit.ismoving("player") then
                     ni.spell.cast(FlashHeal, ni.members[i].unit)
                 end
             end
