@@ -185,6 +185,7 @@ local abilities = {
             if ni.spell.available(InnerFire)
             and not ni.unit.buff("player", InnerFire) then
                 ni.spell.cast(InnerFire)
+                return true;
             end
         end
     end,
@@ -212,6 +213,7 @@ local abilities = {
                 and ni.spell.available(PainSuppression)
                 and ni.spell.valid(ni.members[i].unit, PainSuppression, false, true, true) then
                     ni.spell.cast(PainSuppression, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -224,6 +226,7 @@ local abilities = {
             and not ni.unit.buff("player", PowerInfusion)
             and ni.player.power() < value then
                 ni.spell.cast(PowerInfusion, "player")
+                return true;
             end
         end
     end,
@@ -236,6 +239,7 @@ local abilities = {
             and ni.unit.exists("target")
             and ni.player.power() < value then
                 ni.spell.cast(Shadowfiend, "target")
+                return true;
             end
         end
     end,
@@ -249,6 +253,7 @@ local abilities = {
                 and ni.spell.available(CureDisease)
                 and ni.spell.valid(ni.members[i].unit, CureDisease, false, true, true) then
                     ni.spell.cast(CureDisease, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -263,6 +268,7 @@ local abilities = {
                 and ni.spell.available(DispelMagic)
                 and ni.spell.valid(ni.members[i].unit, DispelMagic, false, true, true) then
                     ni.spell.cast(DispelMagic, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -277,6 +283,7 @@ local abilities = {
                 and ni.spell.available(Renew)
                 and ni.spell.valid(ni.members[i].unit, Renew, false, true, true) then
                     ni.spell.cast(Renew, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -291,6 +298,7 @@ local abilities = {
                 and ni.spell.available(PrayerOfMending)
                 and ni.spell.valid(ni.members[i].unit, PrayerOfMending, false, true, true) then
                     ni.spell.cast(PrayerOfMending, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -306,6 +314,7 @@ local abilities = {
                 and ni.spell.valid(ni.members[i].unit, PrayerOfHealing, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(PrayerOfHealing, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -320,6 +329,7 @@ local abilities = {
                 and ni.spell.valid(ni.members[i].unit, Penance, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(Penance, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -334,6 +344,7 @@ local abilities = {
                 and ni.spell.valid(ni.members[i].unit, FlashHeal, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(FlashHeal, ni.members[i].unit)
+                    return true;
                 end
             end
         end
@@ -349,6 +360,7 @@ local abilities = {
                 and ni.spell.available(PowerWordShield)
                 and ni.spell.valid(ni.members[i].unit, PowerWordShield, false, true, true) then
                     ni.spell.cast(PowerWordShield, ni.members[i].unit)
+                    return true;
                 end
             end
         end
