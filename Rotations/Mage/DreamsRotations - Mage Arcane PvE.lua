@@ -7,7 +7,7 @@
 -- 1.0.0 Initial release
 -- 1.0.1 Added Auto Target
 -- 1.0.2 Added GUI
--- 1.0.3 Improved rotation
+-- 1.0.3 Improved overall rotation
 --------------------------------
 local ni = ...
 

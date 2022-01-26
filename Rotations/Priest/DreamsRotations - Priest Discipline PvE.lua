@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotation Priest - Discipline PvE
--- Version - 1.0.3
+-- Version - 1.0.4
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -8,6 +8,7 @@
 -- 1.0.1 Added Power Infusion
 -- 1.0.2 Added dispelling diseases and magic debuffs
 -- 1.0.3 Added GUI
+-- 1.0.4 Improved overall rotation
 --------------------------------
 local ni = ...
 
@@ -29,7 +30,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48168)) .. ":26:26\124t Use Inner Fire",
         tooltip = "Use Inner Fire if not active",
         enabled = true,
-        key = "getSetting_InnerFire",
+        key = "innerfire",
     },
     {
         type = "entry",
@@ -37,7 +38,7 @@ local items = {
         tooltip = "Use Pain Suppression if raid member is below health percentage",
         enabled = true,
         value = 20,
-        key = "getSetting_PainSuppression",
+        key = "painsuppression",
     },
     {
         type = "entry",
@@ -45,29 +46,29 @@ local items = {
         tooltip = "Use Power Infusion on yourself if you below mana percentage",
         enabled = true,
         value = 90,
-        key = "getSetting_PowerInfusion",
+        key = "powerinfusion",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Use Shadowfiend if below Mana %",
-        tooltip = "Use Shadowfiend on target if you below mana Percentage",
+        tooltip = "Use Shadowfiend on target if you below mana percentage",
         enabled = true,
         value = 40,
-        key = "getSetting_Shadowfiend",
+        key = "shadowfiend",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Use Cure Disease on disease debuffs",
+        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Use Cure Disease",
         tooltip = "Use Cure Disease if raid member has a disease",
         enabled = true,
-        key = "getSetting_CureDisease",
+        key = "curedisease",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Use Dispell Magic on magic debuffs",
+        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Use Dispell Magic",
         tooltip = "Use Dispell Magic if raid member has a magic debuff",
         enabled = true,
-        key = "getSetting_DispellMagic",
+        key = "dispellmagic",
     },
     {
         type = "separator",
@@ -81,14 +82,14 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Use Renew",
         tooltip = "Use Renew and keeps it active on tanks",
         enabled = true,
-        key = "getSetting_Renew",
+        key = "renew",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Use Prayer of Mending",
         tooltip = "Use Prayer of Mending on tanks",
         enabled = true,
-        key = "getSetting_PrayerOfMending",
+        key = "prayerofmending",
     },
     {
         type = "entry",
@@ -96,7 +97,7 @@ local items = {
         tooltip = "Use Prayer of Healing if more than 4 raid member are below health percentage",
         enabled = true,
         value = 60,
-        key = "getSetting_PrayerOfHealing",
+        key = "prayerofhealing",
     },
     {
         type = "entry",
@@ -104,7 +105,7 @@ local items = {
         tooltip = "Use Penance if raid member is below health percentage",
         enabled = true,
         value = 80,
-        key = "getSetting_Penance",
+        key = "penance",
     },
     {
         type = "entry",
@@ -112,15 +113,15 @@ local items = {
         tooltip = "Use Flash Heal if a raid member is below health percentage",
         enabled = true,
         value = 80,
-        key = "getSetting_FlashHeal",
+        key = "flashheal",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Use Power Word: Shield",
-        tooltip = "Use Power Word: Shield on all raid member if they have more than at the defined health percentage",
+        tooltip = "Use Power Word: Shield on all raid members if they have more than the defined health percentage",
         enabled = true,
         value = 60,
-        key = "getSetting_PowerWordShield",
+        key = "powerwordshield",
     },
 }
 
@@ -142,6 +143,25 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Priest Discipline PvE");
 end
 
+-- Spells
+local InnerFire = GetSpellInfo(48168)
+local PainSuppression = GetSpellInfo(33206)
+local PowerInfusion = GetSpellInfo(10060)
+local Shadowfiend = GetSpellInfo(34433)
+local CureDisease = GetSpellInfo(528)
+local DispelMagic = GetSpellInfo(988)
+local Renew = GetSpellInfo(48068)
+local PrayerOfMending = GetSpellInfo(48113)
+local PrayerOfHealing = GetSpellInfo(48072)
+local Penance = GetSpellInfo(53007)
+local FlashHeal = GetSpellInfo(48071)
+local PowerWordShield = GetSpellInfo(48066)
+local WeakenedSoul = GetSpellInfo(6788)
+
+-- Items
+local Food = GetSpellInfo(45548)
+local Drink = GetSpellInfo(57073)
+
 local queue = {
     "Inner Fire",
     "Pause Rotation",
@@ -160,162 +180,172 @@ local queue = {
 
 local abilities = {
     ["Inner Fire"] = function()
-        local _, enabled = GetSetting("getSetting_InnerFire")
+        local _, enabled = GetSetting("innerfire")
         if enabled then
-            if ni.spell.available("Inner Fire")
-            and not ni.unit.buff("player", "Inner Fire") then
-                ni.spell.cast("Inner Fire")
+            if ni.spell.available(InnerFire)
+            and not ni.unit.buff("player", InnerFire) then
+                ni.spell.cast(InnerFire)
             end
         end
     end,
 
     ["Pause Rotation"] = function()
         if IsMounted()
+        or UnitIsDeadOrGhost("player")
+        or UnitIsDeadOrGhost("target")
+        or UnitUsingVehicle("player")
+        or UnitInVehicle("player")
         or not UnitAffectingCombat("player")
-        or UnitIsDeadOrGhost("player") then
+        or ni.unit.ischanneling("player")
+        or ni.unit.iscasting("player")
+        or ni.unit.buff("player", Food)
+        or ni.unit.buff("player", Drink) then
             return true;
         end
     end,
 
     ["Pain Suppression"] = function()
-        local value, enabled = GetSetting("getSetting_PainSuppression")
+        local value, enabled = GetSetting("painsuppression")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.members[i].range 
-                and ni.spell.available("Pain Suppression") then
-                    ni.spell.cast("Pain Suppression", ni.members[i].unit)
+                and ni.spell.available(PainSuppression)
+                and ni.spell.valid(ni.members[i].unit, PainSuppression, false, true, true) then
+                    ni.spell.cast(PainSuppression, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Power Infusion"] = function()
-        local value, enabled = GetSetting("getSetting_PowerInfusion")
+        local value, enabled = GetSetting("powerinfusion")
         if enabled then
-            if ni.spell.available("Power Infusion")
-            and not ni.unit.buff("player", "Power Infusion")
+            if ni.spell.available(PowerInfusion)
+            and not ni.unit.buff("player", PowerInfusion)
             and ni.player.power() < value then
-                ni.spell.cast("Power Infusion", "player")
+                ni.spell.cast(PowerInfusion, "player")
             end
         end
     end,
 
     ["Shadowfiend"] = function()
-        local value, enabled = GetSetting("getSetting_Shadowfiend")
+        local value, enabled = GetSetting("shadowfiend")
         if enabled then
-            if ni.spell.available("Shadowfiend")
+            if ni.spell.available(Shadowfiend)
+            and ni.spell.valid("target", Shadowfiend, true, true)
             and ni.unit.exists("target")
             and ni.player.power() < value then
-                ni.spell.cast("Shadowfiend", "target")
+                ni.spell.cast(Shadowfiend, "target")
             end
         end
     end,
 
     ["Disease"] = function()
-        local _, enabled = GetSetting("getSetting_CureDisease")
+        local _, enabled = GetSetting("curedisease")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Disease")
-                and ni.members[i].range
                 and ni.members[i].hp > 40
-                and ni.spell.available("Cure Disease") then
-                    ni.spell.cast("Cure Disease", ni.members[i].unit)
+                and ni.spell.available(CureDisease)
+                and ni.spell.valid(ni.members[i].unit, CureDisease, false, true, true) then
+                    ni.spell.cast(CureDisease, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Dispel Magic"] = function()
-        local _, enabled = GetSetting("getSetting_DispellMagic")
+        local _, enabled = GetSetting("dispellmagic")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Magic")
-                and ni.members[i].range
                 and ni.members[i].hp > 40
-                and ni.spell.available("Dispel Magic") then
-                    ni.spell.cast("Dispel Magic", ni.members[i].unit)
+                and ni.spell.available(DispelMagic)
+                and ni.spell.valid(ni.members[i].unit, DispelMagic, false, true, true) then
+                    ni.spell.cast(DispelMagic, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Renew"] = function()
-        local _, enabled = GetSetting("getSetting_Renew")
+        local _, enabled = GetSetting("renew")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
-                and ni.members[i].range
-                and not ni.members[i]:buff("Renew", "player")
-                and ni.spell.available("Renew") then
-                    ni.spell.cast("Renew", ni.members[i].unit)
+                and not ni.members[i]:buff(Renew, "player")
+                and ni.spell.available(Renew)
+                and ni.spell.valid(ni.members[i].unit, Renew, false, true, true) then
+                    ni.spell.cast(Renew, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Prayer of Mending"] = function()
-        local _, enabled = GetSetting("getSetting_PrayerOfMending")
+        local _, enabled = GetSetting("prayerofmending")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
-                and ni.members[i].range
-                and not ni.unit.buff(ni.members[i].unit, "Prayer of Mending", "player")
-                and ni.spell.available("Prayer of Mending") then
-                    ni.spell.cast("Prayer of Mending", ni.members[i].unit)
+                and not ni.unit.buff(ni.members[i].unit, PrayerOfMending, "player")
+                and ni.spell.available(PrayerOfMending)
+                and ni.spell.valid(ni.members[i].unit, PrayerOfMending, false, true, true) then
+                    ni.spell.cast(PrayerOfMending, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Prayer of Healing"] = function()
-        local value, enabled = GetSetting("getSetting_PrayerOfHealing")
+        local value, enabled = GetSetting("prayerofhealing")
         if enabled then
             local count = ni.members.below(value);
             for i = 1, #ni.members do
-                if ni.members[i].range and count > 4
-                and ni.spell.available("Prayer of Healing") then
-                    ni.spell.cast("Prayer of Healing", ni.members[i].unit)
+                if count > 4
+                and ni.spell.available(PrayerOfHealing)
+                and ni.spell.valid(ni.members[i].unit, PrayerOfHealing, false, true, true) then
+                    ni.spell.cast(PrayerOfHealing, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Penance"] = function()
-        local value, enabled = GetSetting("getSetting_Penance")
+        local value, enabled = GetSetting("penance")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.members[i].range
-                and ni.spell.available("Penance") then
-                    ni.spell.cast("Penance", ni.members[i].unit)
+                and ni.spell.available(Penance)
+                and ni.spell.valid(ni.members[i].unit, Penance, false, true, true) then
+                    ni.spell.cast(Penance, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Flash Heal"] = function()
-        local value, enabled = GetSetting("getSetting_FlashHeal")
+        local value, enabled = GetSetting("flashheal")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.members[i].range
-                and ni.spell.available("Flash Heal") then
-                    ni.spell.cast("Flash Heal", ni.members[i].unit)
+                and ni.spell.available(FlashHeal)
+                and ni.spell.valid(ni.members[i].unit, FlashHeal, false, true, true) then
+                    ni.spell.cast(FlashHeal, ni.members[i].unit)
                 end
             end
         end
     end,
 
     ["Power Word: Shield"] = function()
-        local value, enabled = GetSetting("getSetting_PowerWordShield")
+        local value, enabled = GetSetting("powerwordshield")
         if enabled then
             for i = 1, #ni.members do
-                if ni.members[i].hp > value and ni.members[i].range
-                and not ni.unit.debuff(ni.members[i].unit, "Weakened Soul", "player")
-                and not ni.unit.buff(ni.members[i].unit, "Power Word: Shield", "player")
-                and ni.spell.available("Power Word: Shield") then
-                    ni.spell.cast("Power Word: Shield", ni.members[i].unit)
+                if ni.members[i].hp > value
+                and not ni.unit.debuff(ni.members[i].unit, WeakenedSoul, "player")
+                and not ni.unit.buff(ni.members[i].unit, PowerWordShield, "player")
+                and ni.spell.available(PowerWordShield)
+                and ni.spell.valid(ni.members[i].unit, PowerWordShield, false, true, true) then
+                    ni.spell.cast(PowerWordShield, ni.members[i].unit)
                 end
             end
         end

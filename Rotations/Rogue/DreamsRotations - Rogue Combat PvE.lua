@@ -9,7 +9,7 @@
 -- 1.0.2 Added Tricks of the Trade on Focus Target
 -- 1.0.3 Added Auto Target
 -- 1.0.4 Added GUI
--- 1.0.5 Improved Rotation
+-- 1.0.5 Improved overall rotation
 --------------------------------
 local ni = ...
 
@@ -201,7 +201,7 @@ local abilities = {
         local _, enabled = GetSetting("tricksofthetrade")
         if enabled then
             if ni.spell.available(TricksOfTheTrade)
-            and ni.spell.valid("focus", TricksOfTheTrade, true, true)
+            and ni.spell.valid("focus", TricksOfTheTrade, false, true, true)
             and ni.unit.exists("focus")
             and ni.player.power() < 85 then
                 ni.spell.cast(TricksOfTheTrade, "focus")

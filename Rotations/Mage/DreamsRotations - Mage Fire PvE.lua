@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotation - Mage - Fire PvE
--- Version - 1.0.4
+-- Version - 1.0.5
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -11,6 +11,7 @@
 -- 1.0.4 Added Winters Chill Debuff
 --       More checks for casts and pause function, no spamming or clipping of casts anymore
 --       Use CastSpellByID() instead of CastSpellByName() for other localizations
+-- 1.0.5 Improved overall rotation
 --------------------------------
 local ni = ...
 
