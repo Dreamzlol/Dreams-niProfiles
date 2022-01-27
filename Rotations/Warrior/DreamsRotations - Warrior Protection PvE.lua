@@ -33,7 +33,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(674)) .. ":26:26\124t Use Auto Attack",
         tooltip = "Use the Auto Attack feature it will automatically start auto attack",
         enabled = true,
-        key = "autotarget",
+        key = "autoattack",
     },
     {
         type = "separator",
@@ -119,7 +119,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(47450)) .. ":26:26\124t Use Heroic Strike if more than rage",
         tooltip = "Use Heroic Strike if you have more than the defined rage",
         enabled = true,
-        value = 40,
+        value = 60,
         key = "heroicstrike",
     },
     {
@@ -195,16 +195,16 @@ local queue = {
     "Last Stand",
     "Shield Block",
     "Shield Bash",
+    "Shockwave",
     "Thunder Clap",
+    "Cleave",
     "Heroic Throw",
     "Shield Slam",
+    "Rend",
     "Revenge",
     "Concussion Blow",
-    "Shockwave",
-    "Devastate",
-    "Rend",
-    "Cleave",
     "Heroic Strike",
+    "Devastate",
 }
 
 local abilities = {
@@ -238,21 +238,24 @@ local abilities = {
 	end,
 
     ["Auto Attack"] = function()
-        if ni.unit.exists("target")
-        and UnitCanAttack("player", "target")
-        and not UnitIsDeadOrGhost("target")
-        and UnitAffectingCombat("player")
-        and not IsCurrentSpell(AutoAttack) then
-            ni.spell.cast(AutoAttack)
-            return true;
+        local _, enabled = GetSetting("autoattack")
+        if enabled then
+            if ni.unit.exists("target")
+            and UnitCanAttack("player", "target")
+            and not UnitIsDeadOrGhost("target")
+            and UnitAffectingCombat("player")
+            and not IsCurrentSpell(AutoAttack) then
+                ni.spell.cast(AutoAttack)
+                return true;
+            end
         end
     end,
 
     ["Revenge"] = function()
         local _, enabled = GetSetting("revenge")
         if enabled then
-            if ni.spell.available()
-            and ni.spell.valid("target", Revenge, true, true) then
+            if ni.spell.available(Revenge)
+            and IsUsableSpell("Revenge") then
                 ni.spell.cast(Revenge, "target")
                 return true;
             end
