@@ -12,8 +12,13 @@
 --       More checks for casts and pause function, no spamming or clipping of casts anymore
 --       Use CastSpellByID() instead of CastSpellByName() for other localizations
 -- 1.0.5 Improved overall rotation
+-- 1.0.6 Save someone eyes cyka blyat... (rly dude why not?) -- Kaylemine
 --------------------------------
-local ni = ...
+local ni        = ...
+local ni.spell  = SP
+local ni.unit   = UN
+local ni.player = PL
+local TNE       = ni.backend.GetFunction("TargetNearestEnemy")
 
 local items = {
     settingsfile = "DreamsRotations - Fire Mage PvE.json",
@@ -149,27 +154,30 @@ local function onunload()
 end
 
 -- Spells
-local MoltenArmor = GetSpellInfo(43046)
-local ArcaneBrilliance = GetSpellInfo(43002)
-local ConjureManaGem = GetSpellInfo(42985)
-local Evocation = GetSpellInfo(12051)
-local MirrorImage = GetSpellInfo(55342)
-local Scorch = GetSpellInfo(42859)
-local FireBlast = GetSpellInfo(42873)
-local LivingBomb = GetSpellInfo(55360)
-local Pyroblast = GetSpellInfo(42891)
-local Combustion = GetSpellInfo(11129)
-local Fireball = GetSpellInfo(42833)
-local ImprovedScorch = GetSpellInfo(22959)
-local ShadowMastery = GetSpellInfo(17800)
-local WintersChill = GetSpellInfo(12579)
-local HotStreak = GetSpellInfo(48108)
 
+
+SB = {
+    MoltenArmor      = 43046,
+    ArcaneBrilliance = 43002,
+    ConjureManaGem   = 42985,
+    Evocation        = 12051,
+    MirrorImage      = 55342,
+    Scorch           = 42859,
+    FireBlast        = 42873,
+    LivingBomb       = 55360,
+    Pyroblast        = 42891,
+    Combustion       = 11129,
+    Fireball         = 42833,
+    ImprovedScorch   = 22959,
+    ShadowMastery    = 17800,
+    WintersChill     = 12579,
+    HotStreak        = 48108,
+    Food             = 45548,
+    Drink            = 57073
+}
 -- Items
 local ManaSapphire = GetItemInfo(33312)
 local ArcanePowder = GetItemInfo(17020)
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
 
 local queue = {
     "Molten Armor",
@@ -189,177 +197,180 @@ local queue = {
 }
 
 local abilities = {
+    
     ["Molten Armor"] = function()
-        local _, enabled = GetSetting("moltenarmor")
-        if enabled then
-            if ni.spell.available(MoltenArmor)
-            and not ni.unit.buff("player", MoltenArmor) then
-                ni.spell.cast(MoltenArmor)
-                return true;
-            end
+    local _, enabled = GetSetting("moltenarmor")
+    if enabled then
+        if SP.available(SB.MoltenArmor)
+        and not UN.buff("player", SB.MoltenArmor) then
+            SP.cast(SB.MoltenArmor)
+            return true;
         end
+    end
     end,
 
     ["Arcane Brilliance"] = function()
-        local _, enabled = GetSetting("arcanebrilliance")
-        if enabled then
-            if ni.spell.available(ArcaneBrilliance)
-            and not ni.unit.buff("player", ArcaneBrilliance)
-            and ni.player.hasitem(ArcanePowder) then
-                ni.spell.cast(ArcaneBrilliance)
-                return true;
-            end
+    local _, enabled = GetSetting("arcanebrilliance")
+    if enabled then
+        if SP.available(SB.ArcaneBrilliance)
+        and not UN.buff("player", SB.ArcaneBrilliance)
+        and PL.hasitem(ArcanePowder) then
+            SP.cast(SB.ArcaneBrilliance)
+            return true;
         end
+    end
     end,
 
     ["Conjure Mana Gem"] = function()
-        local _, enabled = GetSetting("conjuremanagem")
-        if enabled then
-            if ni.spell.available(ConjureManaGem)
-            and not ni.player.hasitem(ManaSapphire)
-            and not ni.player.ismoving("player")
-            and not UnitAffectingCombat("player") then
-                ni.spell.cast(ConjureManaGem)
-                return true;
-            end
+    local _, enabled = GetSetting("conjuremanagem")
+    if enabled then
+        if SP.available(SB.ConjureManaGem)
+        and not PL.hasitem(ManaSapphire)
+        and not PL.ismoving("player")
+        and not UnitAffectingCombat("player") then
+            SP.cast(SB.ConjureManaGem)
+            return true;
         end
+    end
     end,
 
     ["Pause Rotation"] = function()
-        if IsMounted()
-        or UnitIsDeadOrGhost("player")
-        or UnitIsDeadOrGhost("target")
-        or UnitUsingVehicle("player")
-        or UnitInVehicle("player")
-        or not UnitAffectingCombat("player")
-        or ni.unit.ischanneling("player")
-        or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
-            return true;
-        end
+    if IsMounted()
+    or UnitIsDeadOrGhost("player")
+    or UnitIsDeadOrGhost("target")
+    or UnitUsingVehicle("player")
+    or UnitInVehicle("player")
+    or not UnitAffectingCombat("player")
+    or UN.ischanneling("player")
+    or UN.iscasting("player")
+    or UN.buff("player", SB.Food)
+    or UN.buff("player", SB.Drink) then
+        return true;
+    end
     end,
 
     ["Auto Target"] = function()
-        local _, enabled = GetSetting("autotarget")
-        if enabled then
-            if UnitAffectingCombat("player")
-            and ((ni.unit.exists("target")
-            and UnitIsDeadOrGhost("target")
-            and not UnitCanAttack("player", "target"))
-            or not ni.unit.exists("target")) then
-                ni.player.runtext("/targetenemy")
-                return true;
-            end
+    local _, enabled = GetSetting("autotarget")
+    if enabled then
+        if UnitAffectingCombat("player")
+        and ((UN.exists("target")
+        and UnitIsDeadOrGhost("target")
+        and not UnitCanAttack("player", "target"))
+        or not UN.exists("target")) then
+            PL.runtext("/targetenemy") -- <-- probably unsafe i think
+			-- TNE();  <-- test me on 3.3.5 cuz idk is that exist on 335
+            return true;
         end
+    end
     end,
 
     ["Mana Sapphire"] = function()
-        local value, enabled = GetSetting("manasapphire")
-        if enabled then
-            if ni.player.itemcd(ManaSapphire) == 0
-            and ni.player.power() < value then
-                ni.player.useitem(ManaSapphire)
-                return true;
-            end
+    local value, enabled = GetSetting("manasapphire")
+    if enabled then
+        if PL.itemcd(ManaSapphire) == 0
+        and PL.power() < value then
+            PL.useitem(ManaSapphire)
+            return true;
         end
+    end
     end,
 
     ["Evocation"] = function()
-        local value, enabled = GetSetting("evocation")
-        if enabled then
-            if ni.spell.available(Evocation)
-            and ni.player.power() < value
-            and not ni.unit.ismoving("player") then
-                ni.spell.cast(Evocation)
-                return true;
-            end
+    local value, enabled = GetSetting("evocation")
+    if enabled then
+        if SP.available(SB.Evocation)
+        and PL.power() < value
+        and not UN.ismoving("player") then
+            SP.cast(SB.Evocation)
+            return true;
         end
+    end
     end,
 
     ["Scorch"] = function()
-        local _, enabled = GetSetting("scorch")
-        if enabled then
-            if ni.spell.available(Scorch)
-            and ni.spell.valid("target", Scorch, true, true)
-            and not ni.unit.debuff("target", ImprovedScorch)
-            and not ni.unit.debuff("target", ShadowMastery)
-            and not ni.unit.debuff("target", WintersChill)
-            and not ni.unit.ismoving("player") then
-                ni.spell.cast(Scorch, "target")
-                return true;
-            end
+    local _, enabled = GetSetting("scorch")
+    if enabled then
+        if SP.available(SB.Scorch)
+        and SP.valid("target", SB.Scorch, true, true)
+        and not UN.debuff("target", SB.ImprovedScorch)
+        and not UN.debuff("target", SB.ShadowMastery)
+        and not UN.debuff("target", SB.WintersChill)
+        and not UN.ismoving("player") then
+            SP.cast(SB.Scorch, "target")
+            return true;
         end
+    end
     end,
 
     ["Fire Blast"] = function()
-        local _, enabled = GetSetting("fireblast")
-        if enabled then
-            if ni.spell.available(FireBlast)
-            and ni.spell.valid("target", FireBlast, true, true)
-            and ni.unit.ismoving("player") then
-                ni.spell.cast(FireBlast, "target")
-                return true;
-            end
+    local _, enabled = GetSetting("fireblast")
+    if enabled then
+        if SP.available(SB.FireBlast)
+        and SP.valid("target", SB.FireBlast, true, true)
+        and UN.ismoving("player") then
+            SP.cast(SB.FireBlast, "target")
+            return true;
         end
+    end
     end,
 
     ["Living Bomb"] = function()
-        local _, enabled = GetSetting("livingbomb")
-        if enabled then
-            if ni.spell.available(LivingBomb)
-            and ni.spell.valid("target", LivingBomb, true, true)
-            and not ni.unit.debuff("target", LivingBomb, "player") then
-                ni.spell.cast(LivingBomb, "target")
-                return true;
-            end
+    local _, enabled = GetSetting("livingbomb")
+    if enabled then
+        if SP.available(SB.LivingBomb)
+        and SP.valid("target", SB.LivingBomb, true, true)
+        and not UN.debuff("target", SB.LivingBomb, "player") then
+            SP.cast(SB.LivingBomb, "target")
+            return true;
         end
+    end
     end,
 
     ["Pyroblast"] = function()
-        local _, enabled = GetSetting("pyroblast")
-        if enabled then
-            if ni.spell.available(Pyroblast)
-            and ni.spell.valid("target", Pyroblast, true, true)
-            and ni.unit.buff("player", HotStreak) then
-                ni.spell.cast(Pyroblast, "target")
-                return true;
-            end
+    local _, enabled = GetSetting("pyroblast")
+    if enabled then
+        if SP.available(SB.Pyroblast)
+        and SP.valid("target", SB.Pyroblast, true, true)
+        and UN.buff("player", SB.HotStreak) then
+            SP.cast(SB.Pyroblast, "target")
+            return true;
         end
+    end
     end,
 
     ["Mirror Image"] = function()
-        local _, enabled = GetSetting("mirrorimage")
-        if enabled then
-            if ni.spell.available(MirrorImage)
-            and ni.unit.isboss("target") then
-                ni.spell.cast(MirrorImage)
-                return true;
-            end
+    local _, enabled = GetSetting("mirrorimage")
+    if enabled then
+        if SP.available(SB.MirrorImage)
+        and UN.isboss("target") then
+            SP.cast(SB.MirrorImage)
+            return true;
         end
+    end
     end,
 
     ["Combustion"] = function()
-        local _, enabled = GetSetting("combustion")
-        if enabled then
-            if ni.spell.available(Combustion)
-            and ni.unit.isboss("target") then
-                ni.spell.cast(Combustion)
-                return true;
-            end
+    local _, enabled = GetSetting("combustion")
+    if enabled then
+        if SP.available(SB.Combustion)
+        and UN.isboss("target") then
+            SP.cast(SB.Combustion)
+            return true;
         end
+    end
     end,
 
     ["Fireball"] = function()
-        local _, enabled = GetSetting("fireball")
-        if enabled then
-            if ni.spell.available(Fireball)
-            and ni.spell.valid("target", Fireball, true, true)
-            and not ni.unit.ismoving("player") then
-                ni.spell.cast(Fireball, "target")
-                return true;
-            end
+    local _, enabled = GetSetting("fireball")
+    if enabled then
+        if SP.available(SB.Fireball)
+        and SP.valid("target", SB.Fireball, true, true)
+        and not UN.ismoving("player") then
+            SP.cast(SB.Fireball, "target")
+            return true;
         end
+    end
     end,
+	
 }
 ni.bootstrap.profile("DreamsRotations - Mage Fire PvE", queue, abilities, onload, onunload)
