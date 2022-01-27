@@ -1,11 +1,14 @@
 # DreamsRotations - PvE Profiles for ni (3.3.5)
+<br>
+<br>
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/92863811/151433366-b4268fe1-dbd9-402a-be74-0036e2415130.png" alt="Sublime's custom image"/>
+    <img src="https://user-images.githubusercontent.com/92863811/151434369-712a4686-85ea-4e95-a3f1-ea1f73162c43.png" alt="Sublime's custom image"/>
 </p>
 
 <br>
 <br>
-
+<br>
+<br>
 <div align="center">
   
 | Class | Specialization | Progress |
