@@ -1,9 +1,8 @@
 # DreamsRotations - PvE Profiles for ni (3.3.5)
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/92863811/150750077-1bf2c540-e6cc-4538-a09e-f9f4cee2fe01.png" alt="Sublime's custom image"/>
+    <img src="https://user-images.githubusercontent.com/92863811/151433366-b4268fe1-dbd9-402a-be74-0036e2415130.png" alt="Sublime's custom image"/>
 </p>
 
-<br>
 <br>
 <br>
 
