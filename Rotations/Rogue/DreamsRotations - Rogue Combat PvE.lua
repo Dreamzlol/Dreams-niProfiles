@@ -1,5 +1,5 @@
 --------------------------------
--- DreamsRotation Rogue - Combat PvE
+-- DreamsRotation - Rogue Combat PvE
 -- Version - 1.0.6
 -- Author - Dreams
 --------------------------------

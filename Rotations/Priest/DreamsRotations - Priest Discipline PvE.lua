@@ -1,5 +1,5 @@
 --------------------------------
--- DreamsRotation Priest - Discipline PvE
+-- DreamsRotation - Priest Discipline PvE
 -- Version - 1.0.4
 -- Author - Dreams
 --------------------------------

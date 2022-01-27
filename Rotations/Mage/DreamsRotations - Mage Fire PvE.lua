@@ -1,5 +1,5 @@
 --------------------------------
--- DreamsRotation - Mage - Fire PvE
+-- DreamsRotation - Mage Fire PvE
 -- Version - 1.0.5
 -- Author - Dreams
 --------------------------------
