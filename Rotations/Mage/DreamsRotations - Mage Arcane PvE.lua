@@ -1,6 +1,6 @@
 --------------------------------
--- DreamsRotation - Mage Arcane PvE
--- Version - 1.0.3
+-- DreamsRotations - Mage Arcane PvE
+-- Version - 1.0.4
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -8,6 +8,7 @@
 -- 1.0.1 Added Auto Target
 -- 1.0.2 Added GUI
 -- 1.0.3 Improved overall rotation
+-- 1.0.4 Added Racials
 --------------------------------
 local ni = ...
 
@@ -15,7 +16,7 @@ local items = {
     settingsfile = "DreamsRotations - Mage Arcane PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Arcane Mage PvE - |cff888888v1.0.3",
+        text = "|cff00ccffDreamsRotations |cffffffff- Arcane Mage PvE - |cff888888v1.0.4",
     },
     {
         type = "separator",
@@ -29,10 +30,17 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Auto Target",
+        text = "Auto Target",
         tooltip = "Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
+    },
+    {
+        type = "entry",
+        text = "Racial",
+        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        enabled = true,
+        key = "racial",
     },
     {
         type = "entry",
@@ -155,25 +163,34 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Mage Arcane PvE");
 end
 
--- Spells
-local MoltenArmor = GetSpellInfo(43046)
-local ArcaneBrilliance = GetSpellInfo(43002)
-local ConjureManaGem = GetSpellInfo(42985)
-local Evocation = GetSpellInfo(12051)
-local IcyVeins = GetSpellInfo(12472)
-local MirrorImage = GetSpellInfo(55342)
-local ArcanePower = GetSpellInfo(12042)
-local PresenceOfMind = GetSpellInfo(12043)
-local ArcaneMissiles = GetSpellInfo(42846)
-local ArcaneMissilesBuff = GetSpellInfo(44401)
-local ArcaneBlast = GetSpellInfo(42897)
-local ArcaneBlastStacks = GetSpellInfo(36032)
+local spell = {
+    moltenarmor = GetSpellInfo(43046),
+    arcanebrilliance = GetSpellInfo(43002),
+    conjuremanagem = GetSpellInfo(42985),
+    evocation = GetSpellInfo(12051),
+    icyveins = GetSpellInfo(12472),
+    mirrorimage = GetSpellInfo(55342),
+    arcanepower = GetSpellInfo(12042),
+    presenceofmind = GetSpellInfo(12043),
+    arcanemissiles = GetSpellInfo(42846),
+    arcanemissilesbuff = GetSpellInfo(44401),
+    arcaneblast = GetSpellInfo(42897),
+    arcaneblaststacks = GetSpellInfo(36032),
+    everymanforhimself = GetSpellInfo(59752),
+    bloodfury = GetSpellInfo(20572),
+    stoneform = GetSpellInfo(20594),
+    beserking = GetSpellInfo(26297),
+    willoftheforsaken = GetSpellInfo(7744),
+}
 
--- Items
-local ManaSapphire = GetItemInfo(33312)
-local ArcanePowder = GetItemInfo(17020)
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
+local item = {
+    manasapphire = GetItemInfo(33312),
+    arcanepowder = GetItemInfo(17020),
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+}
+
+local race = UnitRace("player");
 
 local queue = {
     "Molten Armor",
@@ -196,9 +213,9 @@ local abilities = {
     ["Molten Armor"] = function()
         local _, enabled = GetSetting("moltenarmor")
         if enabled then
-            if ni.spell.available(MoltenArmor)
-            and not ni.unit.buff("player", MoltenArmor) then
-                ni.spell.cast(MoltenArmor)
+            if ni.spell.available(spell.moltenarmor)
+            and not ni.unit.buff("player", spell.moltenarmor) then
+                ni.spell.cast(spell.moltenarmor)
                 return true;
             end
         end
@@ -207,10 +224,10 @@ local abilities = {
     ["Arcane Brilliance"] = function()
         local _, enabled = GetSetting("arcanebrilliance")
         if enabled then
-            if ni.spell.available(ArcaneBrilliance)
-            and not ni.unit.buff("player", ArcaneBrilliance)
-            and ni.player.hasitem(ArcanePowder) then
-                ni.spell.cast(ArcaneBrilliance)
+            if ni.spell.available(spell.arcanebrilliance)
+            and not ni.unit.buff("player", spell.arcanebrilliance)
+            and ni.player.hasitem(item.arcanepowder) then
+                ni.spell.cast(spell.arcanebrilliance)
                 return true;
             end
         end
@@ -219,11 +236,11 @@ local abilities = {
     ["Conjure Mana Gem"] = function()
         local _, enabled = GetSetting("conjuremanagem")
         if enabled then
-            if ni.spell.available(ConjureManaGem)
-            and not ni.player.hasitem(ManaSapphire)
+            if ni.spell.available(spell.conjuremanagem)
+            and not ni.player.hasitem(item.manasapphire)
             and not ni.player.ismoving("player")
             and not UnitAffectingCombat("player") then
-                ni.spell.cast(ConjureManaGem)
+                ni.spell.cast(spell.conjuremanagem)
                 return true;
             end
         end
@@ -238,8 +255,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
         end
     end,
@@ -258,12 +275,42 @@ local abilities = {
         end
     end,
 
+    ["Racial"] = function()
+        local _, enabled = GetSetting("racial")
+        if enabled then
+            if ni.unit.isstunned("player")
+            and race == "Human" then
+                ni.spell.cast(spell.everymanforhimself)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Orc" then
+                ni.spell.cast(spell.bloodfury)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Troll" then
+                ni.spell.cast(spell.beserking)
+            end
+
+            if ni.unit.debufftype("player", "Poison|Disease")
+            and race == "Dwarf" then
+                ni.spell.cast(spell.Dwarf)
+            end
+
+            if ni.unit.isfleeing("player")
+            and race == "Undead" then
+                ni.spell.cast(spell.willoftheforsaken)
+            end
+        end
+    end,
+
     ["Mana Sapphire"] = function()
         local value, enabled = GetSetting("manasapphire")
         if enabled then
-            if ni.player.itemcd(ManaSapphire) == 0
+            if ni.player.itemcd(item.manasapphire) == 0
             and ni.player.power() < value then
-                ni.player.useitem(ManaSapphire)
+                ni.player.useitem(item.manasapphire)
                 return true;
             end
         end
@@ -272,10 +319,10 @@ local abilities = {
     ["Evocation"] = function()
         local value, enabled = GetSetting("evocation")
         if enabled then
-            if ni.spell.available(Evocation)
+            if ni.spell.available(spell.evocation)
             and ni.player.power() < value
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(Evocation)
+                ni.spell.cast(spell.evocation)
                 return true;
             end
         end
@@ -296,10 +343,10 @@ local abilities = {
     ["Mirror Image"] = function()
         local value, enabled = GetSetting("mirrorimage")
         if enabled then
-            if ni.spell.available(MirrorImage)
+            if ni.spell.available(spell.mirrorimage)
             and ni.unit.isboss("target")
-            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
-                ni.spell.cast(MirrorImage)
+            and ni.unit.debuffstacks("player", spell.arcaneblaststacks) >= value then
+                ni.spell.cast(spell.mirrorimage)
                 return true;
             end
         end
@@ -308,10 +355,10 @@ local abilities = {
     ["Icy Veins"] = function()
         local value, enabled = GetSetting("icyveins")
         if enabled then
-            if ni.spell.available(IcyVeins)
+            if ni.spell.available(spell.icyveins)
             and ni.unit.isboss("target")
-            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
-                ni.spell.cast(IcyVeins)
+            and ni.unit.debuffstacks("player", spell.arcaneblaststacks) >= value then
+                ni.spell.cast(spell.icyveins)
                 return true;
             end
         end
@@ -320,10 +367,10 @@ local abilities = {
     ["Arcane Power"] = function()
         local value, enabled = GetSetting("arcanepower")
         if enabled then
-            if ni.spell.available(ArcanePower)
+            if ni.spell.available(spell.arcanepower)
             and ni.unit.isboss("target")
-            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
-                ni.spell.cast(ArcanePower)
+            and ni.unit.debuffstacks("player", spell.arcaneblaststacks) >= value then
+                ni.spell.cast(spell.arcanepower)
                 return true;
             end
         end
@@ -332,10 +379,10 @@ local abilities = {
     ["Presence of Mind"] = function()
         local value, enabled = GetSetting("presenceofmind")
         if enabled then
-            if ni.spell.available(PresenceOfMind)
+            if ni.spell.available(spell.presenceofmind)
             and ni.unit.isboss("target")
-            and ni.unit.debuffstacks("player", ArcaneBlastStacks) >= value then
-                ni.spell.cast(PresenceOfMind)
+            and ni.unit.debuffstacks("player", spell.arcaneblaststacks) >= value then
+                ni.spell.cast(spell.presenceofmind)
                 return true;
             end
         end
@@ -344,12 +391,12 @@ local abilities = {
     ["Arcane Missiles"] = function()
         local value, enabled = GetSetting("arcanemissiles")
         if enabled then
-            if ni.spell.available(ArcaneMissiles)
-            and ni.unit.debuffstacks("player", ArcaneBlastStacks) == value
-            and ni.spell.valid("target", ArcaneMissiles, true, true)
-            and ni.unit.buff("player", ArcaneMissilesBuff)
+            if ni.spell.available(spell.arcanemissiles)
+            and ni.unit.debuffstacks("player", spell.arcaneblaststacks) == value
+            and ni.spell.valid("target", spell.arcanemissiles, true, true)
+            and ni.unit.buff("player", spell.arcanemissilesbuff)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(ArcaneMissiles, "target")
+                ni.spell.cast(spell.arcanemissiles, "target")
                 return true;
             end
         end
@@ -358,10 +405,10 @@ local abilities = {
     ["Arcane Blast"] = function()
         local _, enabled = GetSetting("arcaneblast")
         if enabled then
-            if ni.spell.available(ArcaneBlast)
-            and ni.spell.valid("target", ArcaneBlast, true, true)
+            if ni.spell.available(spell.arcaneblast)
+            and ni.spell.valid("target", spell.arcaneblast, true, true)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(ArcaneBlast, "target")
+                ni.spell.cast(spell.arcaneblast, "target")
                 return true;
             end
         end

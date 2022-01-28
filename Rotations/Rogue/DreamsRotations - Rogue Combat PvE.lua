@@ -1,6 +1,6 @@
 --------------------------------
--- DreamsRotation - Rogue Combat PvE
--- Version - 1.0.6
+-- DreamsRotations - Rogue Combat PvE
+-- Version - 1.0.7
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -11,6 +11,7 @@
 -- 1.0.4 Added GUI
 -- 1.0.5 Improved overall rotation
 -- 1.0.6 Added Poisons
+-- 1.0.7 Added Racials
 --------------------------------
 local ni = ...
 
@@ -18,7 +19,7 @@ local items = {
     settingsfile = "DreamsRotations - Rogue Combat PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Rogue Combat PvE - |cff888888v1.0.6",
+        text = "|cff00ccffDreamsRotations |cffffffff- Rogue Combat PvE - |cff888888v1.0.7",
     },
     {
         type = "separator",
@@ -32,10 +33,17 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(2764)) .. ":26:26\124t Auto Target",
+        text = "Auto Target",
         tooltip = "Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
+    },
+    {
+        type = "entry",
+        text = "Racial",
+        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        enabled = true,
+        key = "racial",
     },
     {
         type = "entry",
@@ -140,23 +148,31 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Rogue Combat PvE");
 end
 
--- Spells
-local StartAttack = GetSpellInfo(6603)
-local TricksOfTheTrade = GetSpellInfo(57934)
-local KillingSpree = GetSpellInfo(51690)
-local BladeFlurry = GetSpellInfo(13877)
-local AdrenalineRush = GetSpellInfo(13750)
-local SliceAndDice = GetSpellInfo(6774)
-local Rupture = GetSpellInfo(48672)
-local Eviscerate = GetSpellInfo(48668)
-local SinisterStrike = GetSpellInfo(48638)
+local spell = {
+    startattack = GetSpellInfo(6603),
+    tricksofthetrade = GetSpellInfo(57934),
+    killingspree = GetSpellInfo(51690),
+    bladeflurry = GetSpellInfo(13877),
+    adrenalinerush = GetSpellInfo(13750),
+    sliceanddice = GetSpellInfo(6774),
+    rupture = GetSpellInfo(48672),
+    eviscerate = GetSpellInfo(48668),
+    sinisterstrike = GetSpellInfo(48638),
+    everymanforhimself = GetSpellInfo(59752),
+    bloodfury = GetSpellInfo(20572),
+    stoneform = GetSpellInfo(20594),
+    beserking = GetSpellInfo(26297),
+    willoftheforsaken = GetSpellInfo(7744),
+}
 
--- Items
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
-local InstantPoison = GetItemInfo(43231)
-local DeadlyPoison = GetItemInfo(43233)
+local item = {
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+    instantpoison = GetItemInfo(43231),
+    deadlypoison = GetItemInfo(43233),
+}
 
+local race = UnitRace("player");
 
 local queue = {
     "Poisons",
@@ -165,6 +181,7 @@ local queue = {
     "Start Attack",
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
+    "Racial",
     "Killing Spree",
     "Blade Flurry",
     "Adrenaline Rush",
@@ -189,14 +206,14 @@ local abilities = {
                 PoisonCastTime = GetTime()
 
                 if not mainHand
-                and ni.player.hasitem(InstantPoison) then
-                    ni.player.useitem(InstantPoison)
+                and ni.player.hasitem(item.instantpoison) then
+                    ni.player.useitem(item.instantpoison)
                     ni.player.useinventoryitem(16)
                 end
 
                 if not offHand
-                and ni.player.hasitem(DeadlyPoison) then
-                    ni.player.useitem(DeadlyPoison)
+                and ni.player.hasitem(item.deadlypoison) then
+                    ni.player.useitem(item.deadlypoison)
                     ni.player.useinventoryitem(17)
                 end
             end
@@ -212,8 +229,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
         end
     end,
@@ -237,20 +254,50 @@ local abilities = {
         and UnitCanAttack("player", "target")
         and not UnitIsDeadOrGhost("target")
         and UnitAffectingCombat("player")
-        and not IsCurrentSpell(StartAttack) then
-            ni.spell.cast(StartAttack)
+        and not IsCurrentSpell(spell.startattack) then
+            ni.spell.cast(spell.startattack)
             return true;
+        end
+    end,
+
+    ["Racial"] = function()
+        local _, enabled = GetSetting("racial")
+        if enabled then
+            if ni.unit.isstunned("player")
+            and race == "Human" then
+                ni.spell.cast(spell.everymanforhimself)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Orc" then
+                ni.spell.cast(spell.bloodfury)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Troll" then
+                ni.spell.cast(spell.beserking)
+            end
+
+            if ni.unit.debufftype("player", "Poison|Disease")
+            and race == "Dwarf" then
+                ni.spell.cast(spell.Dwarf)
+            end
+
+            if ni.unit.isfleeing("player")
+            and race == "Undead" then
+                ni.spell.cast(spell.willoftheforsaken)
+            end
         end
     end,
 
     ["Tricks of the Trade"] = function()
         local _, enabled = GetSetting("tricksofthetrade")
         if enabled then
-            if ni.spell.available(TricksOfTheTrade)
-            and ni.spell.valid("focus", TricksOfTheTrade, false, true, true)
+            if ni.spell.available(spell.tricksofthetrade)
+            and ni.spell.valid("focus", spell.tricksofthetrade, false, true, true)
             and ni.unit.exists("focus")
             and ni.player.power() < 85 then
-                ni.spell.cast(TricksOfTheTrade, "focus")
+                ni.spell.cast(spell.tricksofthetrade, "focus")
                 return true;
             end
         end
@@ -271,12 +318,12 @@ local abilities = {
     ["Killing Spree"] = function()
         local _, enabled = GetSetting("killingspree")
         if enabled then
-            if ni.spell.available(KillingSpree)
+            if ni.spell.available(spell.killingspree)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", Rupture, "player")
-            and ni.unit.buff("player", SliceAndDice)
+            and ni.unit.debuff("target", spell.rupture, "player")
+            and ni.unit.buff("player", spell.sliceanddice)
             and ni.player.power() < 70 then
-                ni.spell.cast(KillingSpree, "target")
+                ni.spell.cast(spell.killingspree, "target")
                 return true;
             end
         end
@@ -285,11 +332,11 @@ local abilities = {
     ["Blade Flurry"] = function()
         local _, enabled = GetSetting("bladeflurry")
         if enabled then
-            if ni.spell.available(BladeFlurry)
+            if ni.spell.available(spell.bladeflurry)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", Rupture, "player")
-            and ni.unit.buff("player", SliceAndDice) then
-                ni.spell.cast(BladeFlurry)
+            and ni.unit.debuff("target", spell.rupture, "player")
+            and ni.unit.buff("player", spell.sliceanddice) then
+                ni.spell.cast(spell.bladeflurry)
                 return true;
             end
         end
@@ -298,12 +345,12 @@ local abilities = {
     ["Adrenaline Rush"] = function()
         local _, enabled = GetSetting("adrenalinerush")
         if enabled then
-            if ni.spell.available(AdrenalineRush)
+            if ni.spell.available(spell.adrenalinerush)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", Rupture, "player")
-            and ni.unit.buff("player", SliceAndDice)
+            and ni.unit.debuff("target", spell.rupture, "player")
+            and ni.unit.buff("player", spell.sliceanddice)
             and ni.player.power() < 50 then
-                ni.spell.cast(AdrenalineRush)
+                ni.spell.cast(spell.adrenalinerush)
                 return true;
             end
         end
@@ -312,10 +359,10 @@ local abilities = {
     ["Slice and Dice"] = function()
         local value, enabled = GetSetting("sliceanddice")
         if enabled then
-            if ni.spell.available(SliceAndDice)
+            if ni.spell.available(spell.sliceanddice)
             and GetComboPoints("player", "target") >= value
-            and ni.unit.buffremaining("player", SliceAndDice, "player") <= 2 then
-                ni.spell.cast(SliceAndDice)
+            and ni.unit.buffremaining("player", spell.sliceanddice, "player") <= 2 then
+                ni.spell.cast(spell.sliceanddice)
                 return true;
             end
         end
@@ -324,11 +371,11 @@ local abilities = {
     ["Rupture"] = function()
         local value, enabled = GetSetting("rupture")
         if enabled then
-            if ni.spell.available(Rupture)
-            and ni.spell.valid("target", Rupture, true, true)
+            if ni.spell.available(spell.rupture)
+            and ni.spell.valid("target", spell.rupture, true, true)
             and GetComboPoints("player", "target") >= value
-            and ni.unit.debuffremaining("target", Rupture, "player") <= 2 then
-                ni.spell.cast(Rupture, "target")
+            and ni.unit.debuffremaining("target", spell.rupture, "player") <= 2 then
+                ni.spell.cast(spell.rupture, "target")
                 return true;
             end
         end
@@ -337,10 +384,10 @@ local abilities = {
     ["Eviscerate"] = function()
         local value, enabled = GetSetting("eviscerate")
         if enabled then
-            if ni.spell.available(Eviscerate)
-            and ni.spell.valid("target", Eviscerate, true, true)
+            if ni.spell.available(spell.eviscerate)
+            and ni.spell.valid("target", spell.eviscerate, true, true)
             and GetComboPoints("player", "target") == value then
-                ni.spell.cast(Eviscerate, "target")
+                ni.spell.cast(spell.eviscerate, "target")
                 return true;
             end
         end
@@ -349,9 +396,9 @@ local abilities = {
     ["Sinister Strike"] = function()
         local _, enabled = GetSetting("sinisterstrike")
         if enabled then
-            if ni.spell.available(SinisterStrike)
-            and ni.spell.valid("target", SinisterStrike, true, true) then
-                ni.spell.cast(SinisterStrike, "target")
+            if ni.spell.available(spell.sinisterstrike)
+            and ni.spell.valid("target", spell.sinisterstrike, true, true) then
+                ni.spell.cast(spell.sinisterstrike, "target")
                 return true;
             end
         end

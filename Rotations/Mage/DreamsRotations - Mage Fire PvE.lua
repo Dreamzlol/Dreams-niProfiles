@@ -1,6 +1,6 @@
 --------------------------------
--- DreamsRotation - Mage Fire PvE
--- Version - 1.0.5
+-- DreamsRotations - Mage Fire PvE
+-- Version - 1.0.6
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -12,6 +12,7 @@
 --       More checks for casts and pause function, no spamming or clipping of casts anymore
 --       Use CastSpellByID() instead of CastSpellByName() for other localizations
 -- 1.0.5 Improved overall rotation
+-- 1.0.6 Added Racials
 --------------------------------
 local ni = ...
 
@@ -19,7 +20,7 @@ local items = {
     settingsfile = "DreamsRotations - Fire Mage PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Fire Mage PvE - |cff888888v1.0.5",
+        text = "|cff00ccffDreamsRotations |cffffffff- Fire Mage PvE - |cff888888v1.0.6",
     },
     {
         type = "separator",
@@ -33,10 +34,17 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Auto Target",
+        text = "Auto Target",
         tooltip = "Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
+    },
+    {
+        type = "entry",
+        text = "Racial",
+        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        enabled = true,
+        key = "racial",
     },
     {
         type = "entry",
@@ -161,28 +169,32 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Mage Fire PvE");
 end
 
--- Spells
-local MoltenArmor = GetSpellInfo(43046)
-local ArcaneBrilliance = GetSpellInfo(43002)
-local ConjureManaGem = GetSpellInfo(42985)
-local Evocation = GetSpellInfo(12051)
-local MirrorImage = GetSpellInfo(55342)
-local Scorch = GetSpellInfo(42859)
-local FireBlast = GetSpellInfo(42873)
-local LivingBomb = GetSpellInfo(55360)
-local Pyroblast = GetSpellInfo(42891)
-local Combustion = GetSpellInfo(11129)
-local Fireball = GetSpellInfo(42833)
-local ImprovedScorch = GetSpellInfo(22959)
-local ShadowMastery = GetSpellInfo(17800)
-local WintersChill = GetSpellInfo(12579)
-local HotStreak = GetSpellInfo(48108)
+local spell = {
+    moltenarmor = GetSpellInfo(43046),
+    arcanebrilliance = GetSpellInfo(43002),
+    conjuremanagem = GetSpellInfo(42985),
+    evocation = GetSpellInfo(12051),
+    mirrorimage = GetSpellInfo(55342),
+    scorch = GetSpellInfo(42859),
+    fireblast = GetSpellInfo(42873),
+    livingbomb = GetSpellInfo(55360),
+    pyroblast = GetSpellInfo(42891),
+    combustion = GetSpellInfo(11129),
+    fireball = GetSpellInfo(42833),
+    improvedscorch = GetSpellInfo(22959),
+    shadowmastery = GetSpellInfo(17800),
+    winterschill = GetSpellInfo(12579),
+    hotstreak = GetSpellInfo(48108),
+}
 
--- Items
-local ManaSapphire = GetItemInfo(33312)
-local ArcanePowder = GetItemInfo(17020)
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
+local item = {
+    manasapphire = GetItemInfo(33312),
+    arcanepowder = GetItemInfo(17020),
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+}
+
+local race = UnitRace("player");
 
 local queue = {
     "Molten Armor",
@@ -206,9 +218,9 @@ local abilities = {
     ["Molten Armor"] = function()
         local _, enabled = GetSetting("moltenarmor")
         if enabled then
-            if ni.spell.available(MoltenArmor)
-            and not ni.unit.buff("player", MoltenArmor) then
-                ni.spell.cast(MoltenArmor)
+            if ni.spell.available(spell.moltenarmor)
+            and not ni.unit.buff("player", spell.moltenarmor) then
+                ni.spell.cast(spell.moltenarmor)
                 return true;
             end
         end
@@ -217,10 +229,10 @@ local abilities = {
     ["Arcane Brilliance"] = function()
         local _, enabled = GetSetting("arcanebrilliance")
         if enabled then
-            if ni.spell.available(ArcaneBrilliance)
-            and not ni.unit.buff("player", ArcaneBrilliance)
-            and ni.player.hasitem(ArcanePowder) then
-                ni.spell.cast(ArcaneBrilliance)
+            if ni.spell.available(spell.arcanebrilliance)
+            and not ni.unit.buff("player", spell.arcanebrilliance)
+            and ni.player.hasitem(item.arcanepowder) then
+                ni.spell.cast(spell.arcanebrilliance)
                 return true;
             end
         end
@@ -229,11 +241,11 @@ local abilities = {
     ["Conjure Mana Gem"] = function()
         local _, enabled = GetSetting("conjuremanagem")
         if enabled then
-            if ni.spell.available(ConjureManaGem)
-            and not ni.player.hasitem(ManaSapphire)
+            if ni.spell.available(spell.conjuremanagem)
+            and not ni.player.hasitem(item.manasapphire)
             and not ni.player.ismoving("player")
             and not UnitAffectingCombat("player") then
-                ni.spell.cast(ConjureManaGem)
+                ni.spell.cast(spell.conjuremanagem)
                 return true;
             end
         end
@@ -248,8 +260,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
         end
     end,
@@ -268,12 +280,42 @@ local abilities = {
         end
     end,
 
+    ["Racial"] = function()
+        local _, enabled = GetSetting("racial")
+        if enabled then
+            if ni.unit.isstunned("player")
+            and race == "Human" then
+                ni.spell.cast(spell.everymanforhimself)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Orc" then
+                ni.spell.cast(spell.bloodfury)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Troll" then
+                ni.spell.cast(spell.beserking)
+            end
+
+            if ni.unit.debufftype("player", "Poison|Disease")
+            and race == "Dwarf" then
+                ni.spell.cast(spell.Dwarf)
+            end
+
+            if ni.unit.isfleeing("player")
+            and race == "Undead" then
+                ni.spell.cast(spell.willoftheforsaken)
+            end
+        end
+    end,
+
     ["Mana Sapphire"] = function()
         local value, enabled = GetSetting("manasapphire")
         if enabled then
-            if ni.player.itemcd(ManaSapphire) == 0
+            if ni.player.itemcd(item.manasapphire) == 0
             and ni.player.power() < value then
-                ni.player.useitem(ManaSapphire)
+                ni.player.useitem(item.manasapphire)
                 return true;
             end
         end
@@ -282,10 +324,10 @@ local abilities = {
     ["Evocation"] = function()
         local value, enabled = GetSetting("evocation")
         if enabled then
-            if ni.spell.available(Evocation)
+            if ni.spell.available(spell.evocation)
             and ni.player.power() < value
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(Evocation)
+                ni.spell.cast(spell.evocation)
                 return true;
             end
         end
@@ -294,13 +336,13 @@ local abilities = {
     ["Scorch"] = function()
         local _, enabled = GetSetting("scorch")
         if enabled then
-            if ni.spell.available(Scorch)
-            and ni.spell.valid("target", Scorch, true, true)
-            and not ni.unit.debuff("target", ImprovedScorch)
-            and not ni.unit.debuff("target", ShadowMastery)
-            and not ni.unit.debuff("target", WintersChill)
+            if ni.spell.available(spell.scorch)
+            and ni.spell.valid("target", spell.scorch, true, true)
+            and not ni.unit.debuff("target", spell.improvedscorch)
+            and not ni.unit.debuff("target", spell.shadowmastery)
+            and not ni.unit.debuff("target", spell.winterschill)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(Scorch, "target")
+                ni.spell.cast(spell.scorch, "target")
                 return true;
             end
         end
@@ -309,10 +351,10 @@ local abilities = {
     ["Fire Blast"] = function()
         local _, enabled = GetSetting("fireblast")
         if enabled then
-            if ni.spell.available(FireBlast)
-            and ni.spell.valid("target", FireBlast, true, true)
+            if ni.spell.available(spell.fireblast)
+            and ni.spell.valid("target", spell.fireblast, true, true)
             and ni.unit.ismoving("player") then
-                ni.spell.cast(FireBlast, "target")
+                ni.spell.cast(spell.fireblast, "target")
                 return true;
             end
         end
@@ -321,10 +363,10 @@ local abilities = {
     ["Living Bomb"] = function()
         local _, enabled = GetSetting("livingbomb")
         if enabled then
-            if ni.spell.available(LivingBomb)
-            and ni.spell.valid("target", LivingBomb, true, true)
-            and not ni.unit.debuff("target", LivingBomb, "player") then
-                ni.spell.cast(LivingBomb, "target")
+            if ni.spell.available(spell.livingbomb)
+            and ni.spell.valid("target", spell.livingbomb, true, true)
+            and not ni.unit.debuff("target", spell.livingbomb, "player") then
+                ni.spell.cast(spell.livingbomb, "target")
                 return true;
             end
         end
@@ -333,10 +375,10 @@ local abilities = {
     ["Pyroblast"] = function()
         local _, enabled = GetSetting("pyroblast")
         if enabled then
-            if ni.spell.available(Pyroblast)
-            and ni.spell.valid("target", Pyroblast, true, true)
-            and ni.unit.buff("player", HotStreak) then
-                ni.spell.cast(Pyroblast, "target")
+            if ni.spell.available(spell.pyroblast)
+            and ni.spell.valid("target", spell.pyroblast, true, true)
+            and ni.unit.buff("player", spell.hotstreak) then
+                ni.spell.cast(spell.pyroblast, "target")
                 return true;
             end
         end
@@ -357,9 +399,9 @@ local abilities = {
     ["Mirror Image"] = function()
         local _, enabled = GetSetting("mirrorimage")
         if enabled then
-            if ni.spell.available(MirrorImage)
+            if ni.spell.available(spell.mirrorimage)
             and ni.unit.isboss("target") then
-                ni.spell.cast(MirrorImage)
+                ni.spell.cast(spell.mirrorimage)
                 return true;
             end
         end
@@ -368,9 +410,9 @@ local abilities = {
     ["Combustion"] = function()
         local _, enabled = GetSetting("combustion")
         if enabled then
-            if ni.spell.available(Combustion)
+            if ni.spell.available(spell.combustion)
             and ni.unit.isboss("target") then
-                ni.spell.cast(Combustion)
+                ni.spell.cast(spell.combustion)
                 return true;
             end
         end
@@ -379,10 +421,10 @@ local abilities = {
     ["Fireball"] = function()
         local _, enabled = GetSetting("fireball")
         if enabled then
-            if ni.spell.available(Fireball)
-            and ni.spell.valid("target", Fireball, true, true)
+            if ni.spell.available(spell.fireball)
+            and ni.spell.valid("target", spell.fireball, true, true)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(Fireball, "target")
+                ni.spell.cast(spell.fireball, "target")
                 return true;
             end
         end

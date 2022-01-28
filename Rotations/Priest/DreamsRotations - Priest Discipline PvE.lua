@@ -1,6 +1,6 @@
 --------------------------------
--- DreamsRotation - Priest Discipline PvE
--- Version - 1.0.4
+-- DreamsRotations - Priest Discipline PvE
+-- Version - 1.0.5
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -9,6 +9,7 @@
 -- 1.0.2 Added dispelling diseases and magic debuffs
 -- 1.0.3 Added GUI
 -- 1.0.4 Improved overall rotation
+-- 1.0.5 Added Racials
 --------------------------------
 local ni = ...
 
@@ -16,7 +17,7 @@ local items = {
     settingsfile = "DreamsRotations - Priest Discipline PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.4",
+        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.5",
     },
     {
         type = "separator",
@@ -27,6 +28,13 @@ local items = {
     },
     {
         type = "separator",
+    },
+    {
+        type = "entry",
+        text = "Racial",
+        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        enabled = true,
+        key = "racial",
     },
     {
         type = "entry",
@@ -149,28 +157,38 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Priest Discipline PvE");
 end
 
--- Spells
-local InnerFire = GetSpellInfo(48168)
-local PainSuppression = GetSpellInfo(33206)
-local PowerInfusion = GetSpellInfo(10060)
-local Shadowfiend = GetSpellInfo(34433)
-local CureDisease = GetSpellInfo(528)
-local DispelMagic = GetSpellInfo(988)
-local Renew = GetSpellInfo(48068)
-local PrayerOfMending = GetSpellInfo(48113)
-local PrayerOfHealing = GetSpellInfo(48072)
-local Penance = GetSpellInfo(53007)
-local FlashHeal = GetSpellInfo(48071)
-local PowerWordShield = GetSpellInfo(48066)
-local WeakenedSoul = GetSpellInfo(6788)
+local spell = {
+    innerfire = GetSpellInfo(48168),
+    painsuppression = GetSpellInfo(33206),
+    powerinfusion = GetSpellInfo(10060),
+    shadowfiend = GetSpellInfo(34433),
+    curedisease = GetSpellInfo(528),
+    dispelmagic = GetSpellInfo(988),
+    renew = GetSpellInfo(48068),
+    prayerofmending = GetSpellInfo(48113),
+    prayerofhealing = GetSpellInfo(48072),
+    penance = GetSpellInfo(53007),
+    flashheal = GetSpellInfo(48071),
+    powerwordshield = GetSpellInfo(48066),
+    weakenedsoul = GetSpellInfo(6788),
+    everymanforhimself = GetSpellInfo(59752),
+    bloodfury = GetSpellInfo(20572),
+    stoneform = GetSpellInfo(20594),
+    beserking = GetSpellInfo(26297),
+    willoftheforsaken = GetSpellInfo(7744),
+}
 
--- Items
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
+local item = {
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+}
+
+local race = UnitRace("player");
 
 local queue = {
     "Inner Fire",
     "Pause Rotation",
+    "Racial",
     "Pain Suppression",
     "Power Infusion",
     "Shadowfiend",
@@ -188,9 +206,9 @@ local abilities = {
     ["Inner Fire"] = function()
         local _, enabled = GetSetting("innerfire")
         if enabled then
-            if ni.spell.available(InnerFire)
-            and not ni.unit.buff("player", InnerFire) then
-                ni.spell.cast(InnerFire)
+            if ni.spell.available(spell.innerfire)
+            and not ni.unit.buff("player", spell.innerfire) then
+                ni.spell.cast(spell.innerfire)
                 return true;
             end
         end
@@ -205,9 +223,39 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
+        end
+    end,
+
+    ["Racial"] = function()
+        local _, enabled = GetSetting("racial")
+        if enabled then
+            if ni.unit.isstunned("player")
+            and race == "Human" then
+                ni.spell.cast(spell.everymanforhimself)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Orc" then
+                ni.spell.cast(spell.bloodfury)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Troll" then
+                ni.spell.cast(spell.beserking)
+            end
+
+            if ni.unit.debufftype("player", "Poison|Disease")
+            and race == "Dwarf" then
+                ni.spell.cast(spell.Dwarf)
+            end
+
+            if ni.unit.isfleeing("player")
+            and race == "Undead" then
+                ni.spell.cast(spell.willoftheforsaken)
+            end
         end
     end,
 
@@ -216,9 +264,9 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.spell.available(PainSuppression)
-                and ni.spell.valid(ni.members[i].unit, PainSuppression, false, true, true) then
-                    ni.spell.cast(PainSuppression, ni.members[i].unit)
+                and ni.spell.available(spell.painsuppression)
+                and ni.spell.valid(ni.members[i].unit, spell.painsuppression, false, true, true) then
+                    ni.spell.cast(spell.painsuppression, ni.members[i].unit)
                     return true;
                 end
             end
@@ -228,10 +276,10 @@ local abilities = {
     ["Power Infusion"] = function()
         local value, enabled = GetSetting("powerinfusion")
         if enabled then
-            if ni.spell.available(PowerInfusion)
-            and not ni.unit.buff("player", PowerInfusion)
+            if ni.spell.available(spell.powerinfusion)
+            and not ni.unit.buff("player", spell.powerinfusion)
             and ni.player.power() < value then
-                ni.spell.cast(PowerInfusion, "player")
+                ni.spell.cast(spell.powerinfusion, "player")
                 return true;
             end
         end
@@ -240,11 +288,11 @@ local abilities = {
     ["Shadowfiend"] = function()
         local value, enabled = GetSetting("shadowfiend")
         if enabled then
-            if ni.spell.available(Shadowfiend)
-            and ni.spell.valid("target", Shadowfiend, true, true)
+            if ni.spell.available(spell.shadowfiend)
+            and ni.spell.valid("target", spell.shadowfiend, true, true)
             and ni.unit.exists("target")
             and ni.player.power() < value then
-                ni.spell.cast(Shadowfiend, "target")
+                ni.spell.cast(spell.shadowfiend, "target")
                 return true;
             end
         end
@@ -256,9 +304,9 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Disease")
                 and ni.members[i].hp > 40
-                and ni.spell.available(CureDisease)
-                and ni.spell.valid(ni.members[i].unit, CureDisease, false, true, true) then
-                    ni.spell.cast(CureDisease, ni.members[i].unit)
+                and ni.spell.available(spell.curedisease)
+                and ni.spell.valid(ni.members[i].unit, spell.curedisease, false, true, true) then
+                    ni.spell.cast(spell.curedisease, ni.members[i].unit)
                     return true;
                 end
             end
@@ -271,9 +319,9 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Magic")
                 and ni.members[i].hp > 40
-                and ni.spell.available(DispelMagic)
-                and ni.spell.valid(ni.members[i].unit, DispelMagic, false, true, true) then
-                    ni.spell.cast(DispelMagic, ni.members[i].unit)
+                and ni.spell.available(spell.dispelmagic)
+                and ni.spell.valid(ni.members[i].unit, spell.dispelmagic, false, true, true) then
+                    ni.spell.cast(spell.dispelmagic, ni.members[i].unit)
                     return true;
                 end
             end
@@ -285,10 +333,10 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
-                and not ni.members[i]:buff(Renew, "player")
-                and ni.spell.available(Renew)
-                and ni.spell.valid(ni.members[i].unit, Renew, false, true, true) then
-                    ni.spell.cast(Renew, ni.members[i].unit)
+                and not ni.members[i]:buff(spell.renew, "player")
+                and ni.spell.available(spell.renew)
+                and ni.spell.valid(ni.members[i].unit, spell.renew, false, true, true) then
+                    ni.spell.cast(spell.renew, ni.members[i].unit)
                     return true;
                 end
             end
@@ -300,10 +348,10 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
-                and not ni.unit.buff(ni.members[i].unit, PrayerOfMending, "player")
-                and ni.spell.available(PrayerOfMending)
-                and ni.spell.valid(ni.members[i].unit, PrayerOfMending, false, true, true) then
-                    ni.spell.cast(PrayerOfMending, ni.members[i].unit)
+                and not ni.unit.buff(ni.members[i].unit, spell.prayerofmending, "player")
+                and ni.spell.available(spell.prayerofmending)
+                and ni.spell.valid(ni.members[i].unit, spell.prayerofmending, false, true, true) then
+                    ni.spell.cast(spell.prayerofmending, ni.members[i].unit)
                     return true;
                 end
             end
@@ -316,10 +364,10 @@ local abilities = {
             local count = ni.members.below(value);
             for i = 1, #ni.members do
                 if count > 4
-                and ni.spell.available(PrayerOfHealing)
-                and ni.spell.valid(ni.members[i].unit, PrayerOfHealing, false, true, true)
+                and ni.spell.available(spell.prayerofhealing)
+                and ni.spell.valid(ni.members[i].unit, spell.prayerofhealing, false, true, true)
                 and not ni.unit.ismoving("player") then
-                    ni.spell.cast(PrayerOfHealing, ni.members[i].unit)
+                    ni.spell.cast(spell.prayerofhealing, ni.members[i].unit)
                     return true;
                 end
             end
@@ -331,10 +379,10 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.spell.available(Penance)
-                and ni.spell.valid(ni.members[i].unit, Penance, false, true, true)
+                and ni.spell.available(spell.penance)
+                and ni.spell.valid(ni.members[i].unit, spell.penance, false, true, true)
                 and not ni.unit.ismoving("player") then
-                    ni.spell.cast(Penance, ni.members[i].unit)
+                    ni.spell.cast(spell.penance, ni.members[i].unit)
                     return true;
                 end
             end
@@ -346,10 +394,10 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
-                and ni.spell.available(FlashHeal)
-                and ni.spell.valid(ni.members[i].unit, FlashHeal, false, true, true)
+                and ni.spell.available(spell.flashheal)
+                and ni.spell.valid(ni.members[i].unit, spell.flashheal, false, true, true)
                 and not ni.unit.ismoving("player") then
-                    ni.spell.cast(FlashHeal, ni.members[i].unit)
+                    ni.spell.cast(spell.flashheal, ni.members[i].unit)
                     return true;
                 end
             end
@@ -361,11 +409,11 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp > value
-                and not ni.unit.debuff(ni.members[i].unit, WeakenedSoul, "player")
-                and not ni.unit.buff(ni.members[i].unit, PowerWordShield, "player")
-                and ni.spell.available(PowerWordShield)
-                and ni.spell.valid(ni.members[i].unit, PowerWordShield, false, true, true) then
-                    ni.spell.cast(PowerWordShield, ni.members[i].unit)
+                and not ni.unit.debuff(ni.members[i].unit, spell.weakenedsoul, "player")
+                and not ni.unit.buff(ni.members[i].unit, spell.powerwordshield, "player")
+                and ni.spell.available(spell.powerwordshield)
+                and ni.spell.valid(ni.members[i].unit, spell.powerwordshield, false, true, true) then
+                    ni.spell.cast(spell.powerwordshield, ni.members[i].unit)
                     return true;
                 end
             end
