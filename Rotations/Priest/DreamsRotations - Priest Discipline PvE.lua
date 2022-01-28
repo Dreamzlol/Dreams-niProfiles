@@ -32,7 +32,7 @@ local items = {
     {
         type = "entry",
         text = "Racial",
-        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
         enabled = true,
         key = "racial",
     },
@@ -48,7 +48,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression when you or ally has HP% or less",
         tooltip = "Cast Pain Suppression if you or ally is at or below health percentage",
         enabled = true,
-        value = 20,
+        value = 40,
         key = "painsuppression",
     },
     {
@@ -233,6 +233,7 @@ local abilities = {
         local _, enabled = GetSetting("racial")
         if enabled then
             if ni.unit.isstunned("player")
+            or ni.unit.isfleeing("player")
             and race == "Human" then
                 ni.spell.cast(spell.everymanforhimself)
             end

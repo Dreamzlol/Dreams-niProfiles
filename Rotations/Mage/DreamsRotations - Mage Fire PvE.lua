@@ -42,7 +42,7 @@ local items = {
     {
         type = "entry",
         text = "Racial",
-        tooltip = "Every Man for Himself if you are stunned, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
         enabled = true,
         key = "racial",
     },
@@ -202,6 +202,7 @@ local queue = {
     "Conjure Mana Gem",
     "Pause Rotation",
     "Auto Target",
+    "Racial",
     "Mana Sapphire",
     "Evocation",
     "Scorch",
@@ -284,6 +285,7 @@ local abilities = {
         local _, enabled = GetSetting("racial")
         if enabled then
             if ni.unit.isstunned("player")
+            or ni.unit.isfleeing("player")
             and race == "Human" then
                 ni.spell.cast(spell.everymanforhimself)
             end

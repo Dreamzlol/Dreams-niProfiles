@@ -28,6 +28,13 @@ local items = {
         enabled = true,
         key = "autotarget",
     },
+    {
+        type = "entry",
+        text = "Racial",
+        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
+        enabled = true,
+        key = "racial",
+    },
 }
 
 local function GetSetting(name)
@@ -48,12 +55,16 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Class Spec PvE");
 end
 
--- Spells
-local Spell = GetSpellInfo(00000)
+local spell = {
+    startattack = GetSpellInfo(6603),
+}
 
--- Items
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
+local item = {
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+}
+
+local race = UnitRace("player");
 
 local queue = {
     "Pause Rotation",
@@ -70,8 +81,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
         end
     end,
@@ -89,5 +100,36 @@ local abilities = {
             end
         end
 	end,
+
+    ["Racial"] = function()
+        local _, enabled = GetSetting("racial")
+        if enabled then
+            if ni.unit.isstunned("player")
+            or ni.unit.isfleeing("player")
+            and race == "Human" then
+                ni.spell.cast(spell.everymanforhimself)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Orc" then
+                ni.spell.cast(spell.bloodfury)
+            end
+
+            if ni.unit.isboss("target")
+            and race == "Troll" then
+                ni.spell.cast(spell.beserking)
+            end
+
+            if ni.unit.debufftype("player", "Poison|Disease")
+            and race == "Dwarf" then
+                ni.spell.cast(spell.Dwarf)
+            end
+
+            if ni.unit.isfleeing("player")
+            and race == "Undead" then
+                ni.spell.cast(spell.willoftheforsaken)
+            end
+        end
+    end,
 }
 ni.bootstrap.profile("DreamsRotations - Class Spec PvE", queue, abilities, onload, onunload)
