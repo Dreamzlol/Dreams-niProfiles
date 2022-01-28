@@ -76,6 +76,13 @@ local items = {
         key = "evocation",
     },
     {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(54758)) .. ":26:26\124t Engineer Glove Enchant (Hyperspeed Accelerators)",
+        tooltip = "Cast Engineer Glove Enchant (Boss Only)",
+        enabled = true,
+        key = "hyperspeedaccelerators",
+    },
+    {
         type = "separator",
     },
     {
@@ -189,6 +196,7 @@ local queue = {
     "Fire Blast",
     "Living Bomb",
     "Pyroblast",
+    "Hyperspeed Accelerators",
     "Mirror Image",
     "Combustion",
     "Fireball",
@@ -329,6 +337,18 @@ local abilities = {
             and ni.spell.valid("target", Pyroblast, true, true)
             and ni.unit.buff("player", HotStreak) then
                 ni.spell.cast(Pyroblast, "target")
+                return true;
+            end
+        end
+    end,
+
+    ["Hyperspeed Accelerators"] = function()
+        local _, enabled = GetSetting("hyperspeedaccelerators")
+        if enabled then
+            if ni.unit.isboss("target")
+            and ni.player.slotcd(10) == 0
+            and ni.player.slotcastable(10) then
+                ni.player.useinventoryitem(10)
                 return true;
             end
         end

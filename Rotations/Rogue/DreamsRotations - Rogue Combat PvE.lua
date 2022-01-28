@@ -260,7 +260,8 @@ local abilities = {
         local _, enabled = GetSetting("hyperspeedaccelerators")
         if enabled then
             if ni.unit.isboss("target")
-            and ni.player.slotcd(10) == 0 then
+            and ni.player.slotcd(10) == 0
+            and ni.player.slotcastable(10) then
                 ni.player.useinventoryitem(10)
                 return true;
             end
