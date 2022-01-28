@@ -183,11 +183,11 @@ local queue = {
     "Auto Target",
     "Mana Sapphire",
     "Evocation",
-    "Hyperspeed Accelerators",
     "Arcane Power",
     "Icy Veins",
     "Mirror Image",
     "Presence of Mind",
+    "Hyperspeed Accelerators",
     "Arcane Missiles",
     "Arcane Blast",
 }
