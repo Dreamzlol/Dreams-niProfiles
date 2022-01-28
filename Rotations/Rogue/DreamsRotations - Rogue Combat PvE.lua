@@ -182,11 +182,11 @@ local queue = {
     "Racial",
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
+    "Slice and Dice",
+    "Rupture",
     "Killing Spree",
     "Blade Flurry",
     "Adrenaline Rush",
-    "Slice and Dice",
-    "Rupture",
     "Eviscerate",
     "Sinister Strike",
 }

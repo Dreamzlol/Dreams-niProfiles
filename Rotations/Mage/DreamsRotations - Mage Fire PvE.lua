@@ -205,10 +205,10 @@ local queue = {
     "Racial",
     "Mana Sapphire",
     "Evocation",
+    "Pyroblast",
     "Scorch",
     "Fire Blast",
     "Living Bomb",
-    "Pyroblast",
     "Hyperspeed Accelerators",
     "Mirror Image",
     "Combustion",
@@ -338,14 +338,22 @@ local abilities = {
     ["Scorch"] = function()
         local _, enabled = GetSetting("scorch")
         if enabled then
-            if ni.spell.available(spell.scorch)
-            and ni.spell.valid("target", spell.scorch, true, true)
-            and not ni.unit.debuff("target", spell.improvedscorch)
-            and not ni.unit.debuff("target", spell.shadowmastery)
-            and not ni.unit.debuff("target", spell.winterschill)
-            and not ni.unit.ismoving("player") then
-                ni.spell.cast(spell.scorch, "target")
-                return true;
+            if ScorchCastTime and GetTime() - ScorchCastTime > 2 then
+                ScorchCastTime = nil
+            end
+
+            if not ScorchCastTime then
+                ScorchCastTime = GetTime()
+
+                if ni.spell.available(spell.scorch)
+                and ni.spell.valid("target", spell.scorch, true, true)
+                and not ni.unit.debuff("target", spell.improvedscorch)
+                and not ni.unit.debuff("target", spell.shadowmastery)
+                and not ni.unit.debuff("target", spell.winterschill)
+                and not ni.unit.ismoving("player") then
+                    ni.spell.cast(spell.scorch, "target")
+                    return true;
+                end
             end
         end
     end,
