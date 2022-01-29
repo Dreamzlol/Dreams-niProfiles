@@ -1,10 +1,11 @@
 --------------------------------
 -- DreamsRotations - Shaman Restoration PvE
--- Version - 1.0.0
+-- Version - 1.0.1
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Added tank priority
 --------------------------------
 local ni = ...
 
@@ -12,7 +13,7 @@ local items = {
     settingsfile = "DreamsRotations - Shaman Restoration PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.0",
+        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.1",
     },
     {
         type = "separator",
@@ -55,6 +56,14 @@ local items = {
         key = "cleansespirit",
     },
     {
+        type = "entry",
+        text = "\124T" .. GetItemIcon(54589) .. ":26:26\124t Glowing Twilight Scale if 4 or more allys are HP% or less",
+        tooltip = "Use Glowing Twilight Scale if 4 or more allys are HP% or less",
+        enabled = true,
+        value = 70,
+        key = "glowingtwilightscale",
+    },
+    {
         type = "separator",
     },
     {
@@ -73,6 +82,14 @@ local items = {
     },
     {
         type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if Tank is at HP% or less (High Priority)",
+        tooltip = "Cast Lesser Healing Wave if Tank is at or below health percentage (High Priority)",
+        enabled = true,
+        value = 60,
+        key = "lesserhealingwavetank",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if you or ally are HP% or less",
         tooltip = "Cast Lesser Healing Wave if you or ally is at or below health percentage",
         enabled = true,
@@ -84,7 +101,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(49273)) .. ":26:26\124t Healing Wave if you or ally are HP% or less",
         tooltip = "Cast Healing Wave if you or ally is at or below health percentage",
         enabled = true,
-        value = 70,
+        value = 60,
         key = "healingwave",
     },
     {
@@ -102,6 +119,22 @@ local items = {
         enabled = true,
         value = 80,
         key = "chainheal",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(16188)) .. ":26:26\124t Nature's Swiftness if you or ally are HP% or less",
+        tooltip = "Cast Nature's Swiftness if you or ally is at or below health percentage",
+        enabled = true,
+        value = 20,
+        key = "naturesswiftness",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(55198)) .. ":26:26\124t Tidal Force if 4 or more allys are HP% or less",
+        tooltip = "Cast Tidal Force if 4 or more allys are at or below health percentage",
+        enabled = true,
+        value = 40,
+        key = "tidalforce",
     },
 }
 
@@ -140,6 +173,7 @@ local spell = {
 local item = {
     food = GetSpellInfo(45548),
     drink = GetSpellInfo(57073),
+    glowingtwilightscale = 54589,
 }
 
 local queue = {
@@ -149,9 +183,13 @@ local queue = {
     "Cleanse Spirit",
     "Pause Rotation",
     "Mana Tide Totem",
+    "Lesser Healing Wave (Tank - High Priority)",
     "Riptide",
-    "Chain Heal",
+    "Glowing Twilight Scale",
+    "Nature's Swiftness",
+    "Tidal Force",
     "Healing Wave",
+    "Chain Heal",
     "Lesser Healing Wave",
 }
 
@@ -210,6 +248,22 @@ local abilities = {
         end
     end,
 
+    ["Lesser Healing Wave (Tank - High Priority"] = function()
+        local value, enabled = GetSetting("lesserhealingwavetank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
+                and ni.spell.available(spell.lesserhealingwave)
+                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, false, true, true)
+                and not ni.unit.ismoving("player") then
+                    ni.spell.cast(spell.lesserhealingwave, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
     ["Lesser Healing Wave"] = function()
         local value, enabled = GetSetting("lesserhealingwave")
         if enabled then
@@ -252,6 +306,46 @@ local abilities = {
                     ni.spell.cast(spell.chainheal, ni.members[i].unit)
                     return true;
                 end
+            end
+        end
+    end,
+
+    ["Glowing Twilight Scale"] = function()
+        local value, enabled = GetSetting("glowingtwilightscale")
+        if enabled then
+            local count = ni.members.below(value);
+            if count >= 4
+            and ni.player.hasitemequipped(item.glowingtwilightscale)
+            and ni.player.itemcd(item.glowingtwilightscale) == 0
+            and not ni.unit.ismoving("player") then
+                ni.player.useitem(item.glowingtwilightscale)
+                return true;
+            end
+        end
+    end,
+
+    ["Nature's Swiftness"] = function()
+        local value, enabled = GetSetting("naturesswiftness")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].hp < value
+                and ni.spell.available(spell.naturesswiftness) then
+                    ni.spell.cast(spell.naturesswiftness)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Tidal Force"] = function()
+        local value, enabled = GetSetting("tidalforce")
+        if enabled then
+            local count = ni.members.below(value);
+            if count >= 4
+            and ni.spell.available(spell.tidalforce)
+            and not ni.unit.ismoving("player") then
+                ni.spell.cast(spell.tidalforce)
+                return true;
             end
         end
     end,
