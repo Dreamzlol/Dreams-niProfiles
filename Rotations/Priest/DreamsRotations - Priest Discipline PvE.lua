@@ -127,7 +127,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally are HP% or less",
-        tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you are Rading 25Man i recommend too disable atleast Flash Heal, because you dont use it in 25Man normally and rather want too shield the entire raid",
+        tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you raid at 25man i recommend too disable Flash Heal, because you dont use Flash Heal in 25man you rather want too shield the entire raid",
         enabled = true,
         value = 80,
         key = "flashheal",
@@ -138,15 +138,15 @@ local items = {
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
         value = 40,
-        key = "powerwordshieldlowhp",
+        key = "powerwordshieldhighpriority",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more (Normal Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more (Low Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage",
         enabled = true,
         value = 40,
-        key = "powerwordshieldraid",
+        key = "powerwordshieldlowpriority",
     },
 }
 
@@ -201,7 +201,7 @@ local queue = {
     "Pause Rotation",
     "Racial",
     "Pain Suppression",
-    "Power Word: Shield (Low HP)",
+    "Power Word: Shield (High Priority)",
     "Power Infusion",
     "Shadowfiend",
     "Prayer of Mending",
@@ -211,7 +211,7 @@ local queue = {
     "Renew",
     "Disease",
     "Dispel Magic",
-    "Power Word: Shield (Raid)",
+    "Power Word: Shield (Low Priority)",
 }
 
 local abilities = {
@@ -422,8 +422,8 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield (Low HP)"] = function()
-        local value, enabled = GetSetting("powerwordshieldlowhp")
+    ["Power Word: Shield (High Priority)"] = function()
+        local value, enabled = GetSetting("powerwordshieldhighpriority")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
@@ -438,8 +438,8 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield (Raid)"] = function()
-        local value, enabled = GetSetting("powerwordshieldraid")
+    ["Power Word: Shield (Low Priority)"] = function()
+        local value, enabled = GetSetting("powerwordshieldlowpriority")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp > value
