@@ -32,13 +32,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(453)) .. ":26:26\124t Racial",
-        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
-        enabled = true,
-        key = "racial",
-    },
-    {
-        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48168)) .. ":26:26\124t Inner Fire",
         tooltip = "Cast Inner Fire if not active",
         enabled = true,
@@ -134,19 +127,18 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (High Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (Low HP, High Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
         value = 40,
-        key = "powerwordshieldhighpriority",
+        key = "powerwordshieldlowhp",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more (Low Priority)",
-        tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield (All)",
+        tooltip = "Cast Power Word: Shield on entire raid if we have no high priority member in raid",
         enabled = true,
-        value = 40,
-        key = "powerwordshieldlowpriority",
+        key = "powerwordshieldall",
     },
 }
 
@@ -182,11 +174,6 @@ local spell = {
     flashheal = GetSpellInfo(48071),
     powerwordshield = GetSpellInfo(48066),
     weakenedsoul = GetSpellInfo(6788),
-    everymanforhimself = GetSpellInfo(59752),
-    bloodfury = GetSpellInfo(20572),
-    stoneform = GetSpellInfo(20594),
-    beserking = GetSpellInfo(26297),
-    willoftheforsaken = GetSpellInfo(7744),
 }
 
 local item = {
@@ -199,9 +186,8 @@ local race = UnitRace("player");
 local queue = {
     "Inner Fire",
     "Pause Rotation",
-    "Racial",
     "Pain Suppression",
-    "Power Word: Shield (High Priority)",
+    "Power Word: Shield (Low HP)",
     "Power Infusion",
     "Shadowfiend",
     "Prayer of Mending",
@@ -211,7 +197,7 @@ local queue = {
     "Renew",
     "Disease",
     "Dispel Magic",
-    "Power Word: Shield (Low Priority)",
+    "Power Word: Shield (All)",
 }
 
 local abilities = {
@@ -238,42 +224,6 @@ local abilities = {
         or ni.unit.buff("player", item.food)
         or ni.unit.buff("player", item.drink) then
             return true;
-        end
-    end,
-
-    ["Racial"] = function()
-        local _, enabled = GetSetting("racial")
-        if enabled then
-            if ni.unit.isstunned("player")
-            or ni.unit.isfleeing("player")
-            and ni.spell.available(spell.everymanforhimself)
-            and race == "Human" then
-                ni.spell.cast(spell.everymanforhimself)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.bloodfury)
-            and race == "Orc" then
-                ni.spell.cast(spell.bloodfury)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.beserking)
-            and race == "Troll" then
-                ni.spell.cast(spell.beserking)
-            end
-
-            if ni.unit.debufftype("player", "Poison|Disease")
-            and ni.spell.available(spell.stoneform)
-            and race == "Dwarf" then
-                ni.spell.cast(spell.stoneform)
-            end
-
-            if ni.unit.isfleeing("player")
-            and ni.spell.available(spell.willoftheforsaken)
-            and race == "Undead" then
-                ni.spell.cast(spell.willoftheforsaken)
-            end
         end
     end,
 
@@ -422,8 +372,8 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield (High Priority)"] = function()
-        local value, enabled = GetSetting("powerwordshieldhighpriority")
+    ["Power Word: Shield (Low HP)"] = function()
+        local value, enabled = GetSetting("powerwordshieldlowhp")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
@@ -438,11 +388,11 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield (Low Priority)"] = function()
-        local value, enabled = GetSetting("powerwordshieldlowpriority")
+    ["Power Word: Shield (All)"] = function()
+        local value, enabled = GetSetting("powerwordshieldall")
         if enabled then
             for i = 1, #ni.members do
-                if ni.members[i].hp > value
+                if ni.members[i].hp <= 100
                 and not ni.unit.debuff(ni.members[i].unit, spell.weakenedsoul, "player")
                 and not ni.unit.buff(ni.members[i].unit, spell.powerwordshield, "player")
                 and ni.spell.available(spell.powerwordshield)

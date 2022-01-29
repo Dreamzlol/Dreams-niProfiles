@@ -1,5 +1,5 @@
 --------------------------------
--- DreamsRotation - Class Spec PvE
+-- DreamsRotations - Class Spec PvE
 -- Version - 1.0.0
 -- Author - Dreams
 --------------------------------
@@ -12,28 +12,34 @@ local items = {
     settingsfile = "DreamsRotations - Class Spec PvE.json",
     {
         type = "title",
-        text = "|cffff00ffDreamsRotations |cffffffff- Class Spec PvE",
+        text = "|cff00ccffDreamsRotations |cffffffff- Class Spec PvE - |cff888888v1.0.0",
     },
     {
         type = "separator",
     },
     {
         type = "title",
-        text = "|cff71C671Main Settings",
+        text = "|cff00ccffMain Settings",
+    },
+    {
+        type = "separator",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(2764)) .. ":26:26\124t Use Auto Target",
-        tooltip = "Use the Auto Target feature if you in combat it will Auto Target the closest enemy around you",
-        enabled = true,
-        key = "autotarget",
-    },
-    {
-        type = "entry",
-        text = "Racial",
+        text = "\124T" .. select(3, GetSpellInfo(453)) .. ":26:26\124t Racial",
         tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
         enabled = true,
         key = "racial",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "title",
+        text = "|cff00ccffRotation Settings",
+    },
+    {
+        type = "separator",
     },
 }
 
@@ -69,6 +75,7 @@ local race = UnitRace("player");
 local queue = {
     "Pause Rotation",
     "Auto Target",
+    "Racial",
 }
 
 local abilities = {
@@ -106,26 +113,31 @@ local abilities = {
         if enabled then
             if ni.unit.isstunned("player")
             or ni.unit.isfleeing("player")
+            and ni.spell.available(spell.everymanforhimself)
             and race == "Human" then
                 ni.spell.cast(spell.everymanforhimself)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.bloodfury)
             and race == "Orc" then
                 ni.spell.cast(spell.bloodfury)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.beserking)
             and race == "Troll" then
                 ni.spell.cast(spell.beserking)
             end
 
             if ni.unit.debufftype("player", "Poison|Disease")
+            and ni.spell.available(spell.stoneform)
             and race == "Dwarf" then
-                ni.spell.cast(spell.Dwarf)
+                ni.spell.cast(spell.stoneform)
             end
 
             if ni.unit.isfleeing("player")
+            and ni.spell.available(spell.willoftheforsaken)
             and race == "Undead" then
                 ni.spell.cast(spell.willoftheforsaken)
             end
