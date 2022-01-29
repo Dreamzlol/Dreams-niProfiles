@@ -16,8 +16,9 @@ local ni = ...
 local items = {
     settingsfile = "DreamsRotations - Priest Discipline PvE.json",
     {
-        type = "title",
+        type = "entry",
         text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.5",
+        tooltip = "If you are rading 25 Man i recommend too disable Flash Heal because you dont use it and just wanna Shield the entire Raid!",
     },
     {
         type = "separator",
@@ -31,7 +32,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "Racial",
+        text = "\124T" .. select(3, GetSpellInfo(453)) .. ":26:26\124t Racial",
         tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
         enabled = true,
         key = "racial",
@@ -45,15 +46,15 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression when you or ally has HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression when you or ally are HP% or less",
         tooltip = "Cast Pain Suppression if you or ally is at or below health percentage",
         enabled = true,
-        value = 40,
+        value = 30,
         key = "painsuppression",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion if you have MP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion if you are MP% or less",
         tooltip = "Cast Power Infusion on yourself if you at or below mana percentage",
         enabled = true,
         value = 90,
@@ -61,7 +62,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you have %MP or less",
+        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you are %MP or less",
         tooltip = "Cast Shadowfiend on target if you at or below mana percentage",
         enabled = true,
         value = 40,
@@ -69,16 +70,18 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff",
-        tooltip = "Cast Cure Disease if you or ally has a disease debuff",
+        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff and are HP% or more",
+        tooltip = "Cast Cure Disease if you or ally has a disease debuff and have more health percentage",
         enabled = true,
+        value = "40",
         key = "curedisease",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff",
-        tooltip = "Cast Dispell Magic if you or ally has a magic debuff",
+        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff and are HP% or more",
+        tooltip = "Cast Dispell Magic if you or ally has a magic debuff and have more health percentage",
         enabled = true,
+        value = "40",
         key = "dispellmagic",
     },
     {
@@ -93,29 +96,29 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew on tanks",
+        text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew on Tanks",
         tooltip = "Cast Renew and keeps it active on tanks",
         enabled = true,
         key = "renew",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending on tanks",
+        text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending on Tanks",
         tooltip = "Cast Prayer of Mending and keeps it active on tanks",
         enabled = true,
         key = "prayerofmending",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 4 allys are HP% or less",
-        tooltip = "Cast Prayer of Healing if more than 4 allys are at or below health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 3 allys are HP% or less",
+        tooltip = "Cast Prayer of Healing if more than 3 allys are at or below health percentage",
         enabled = true,
         value = 60,
         key = "prayerofhealing",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance when you or ally HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance when you or ally are HP% or less",
         tooltip = "Cast Penance if you or ally are at or below health percentage",
         enabled = true,
         value = 80,
@@ -123,7 +126,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally are HP% or less",
         tooltip = "Cast Flash Heal if you or ally are at or below health percentage",
         enabled = true,
         value = 80,
@@ -131,7 +134,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield on you or ally HP% or more",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more",
         tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage",
         enabled = true,
         value = 40,
@@ -300,11 +303,11 @@ local abilities = {
     end,
 
     ["Disease"] = function()
-        local _, enabled = GetSetting("curedisease")
+        local value, enabled = GetSetting("curedisease")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Disease")
-                and ni.members[i].hp > 40
+                and ni.members[i].hp > value
                 and ni.spell.available(spell.curedisease)
                 and ni.spell.valid(ni.members[i].unit, spell.curedisease, false, true, true) then
                     ni.spell.cast(spell.curedisease, ni.members[i].unit)
@@ -315,11 +318,11 @@ local abilities = {
     end,
 
     ["Dispel Magic"] = function()
-        local _, enabled = GetSetting("dispellmagic")
+        local value, enabled = GetSetting("dispellmagic")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Magic")
-                and ni.members[i].hp > 40
+                and ni.members[i].hp > value
                 and ni.spell.available(spell.dispelmagic)
                 and ni.spell.valid(ni.members[i].unit, spell.dispelmagic, false, true, true) then
                     ni.spell.cast(spell.dispelmagic, ni.members[i].unit)
@@ -364,7 +367,7 @@ local abilities = {
         if enabled then
             local count = ni.members.below(value);
             for i = 1, #ni.members do
-                if count > 4
+                if count >= 3
                 and ni.spell.available(spell.prayerofhealing)
                 and ni.spell.valid(ni.members[i].unit, spell.prayerofhealing, false, true, true)
                 and not ni.unit.ismoving("player") then
