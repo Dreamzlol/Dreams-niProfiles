@@ -2,11 +2,9 @@
 <br>
 <br>
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/92863811/151434369-712a4686-85ea-4e95-a3f1-ea1f73162c43.png" alt="Sublime's custom image"/>
+    <img src="https://user-images.githubusercontent.com/92863811/151669616-29e2cfb4-abcb-49df-a81e-20c4cdefb57a.png" alt="Sublime's custom image"/>
 </p>
 
-<br>
-<br>
 <br>
 <br>
 <div align="center">
