@@ -110,7 +110,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(55360)) .. ":26:26\124t Living Bomb",
-        tooltip = "Cast Living Bomb on target",
+        tooltip = "Cast Living Bomb",
         enabled = true,
         key = "livingbomb",
     },
@@ -130,8 +130,8 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(42891)) .. ":26:26\124t Pyroblast on Hot Streak",
-        tooltip = "Cast Pyroblast when you have a Hot Streak buff",
+        text = "\124T" .. select(3, GetSpellInfo(42891)) .. ":26:26\124t Pyroblast",
+        tooltip = "Cast Pyroblast if you have a Hot Streak buff",
         enabled = true,
         key = "pyroblast",
     },
