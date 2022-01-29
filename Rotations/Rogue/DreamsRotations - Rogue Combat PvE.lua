@@ -33,14 +33,14 @@ local items = {
     },
     {
         type = "entry",
-        text = "Auto Target",
+        text = "\124T" .. select(3, GetSpellInfo(1953)) .. ":26:26\124t Auto Target",
         tooltip = "Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
     },
     {
         type = "entry",
-        text = "Racial",
+        text = "\124T" .. select(3, GetSpellInfo(42921)) .. ":26:26\124t Racial",
         tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
         enabled = true,
         key = "racial",

@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotations - Priest Discipline PvE
--- Version - 1.0.5
+-- Version - 1.0.6
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -10,15 +10,15 @@
 -- 1.0.3 Added GUI
 -- 1.0.4 Improved overall rotation
 -- 1.0.5 Added Racials
+-- 1.0.6 Added Power Word: Shield Priority
 --------------------------------
 local ni = ...
 
 local items = {
     settingsfile = "DreamsRotations - Priest Discipline PvE.json",
     {
-        type = "entry",
-        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.5",
-        tooltip = "If you are rading 25 Man i recommend too disable Flash Heal because you dont use it and just wanna Shield the entire Raid!",
+        type = "title",
+        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.6",
     },
     {
         type = "separator",
@@ -127,18 +127,26 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally are HP% or less",
-        tooltip = "Cast Flash Heal if you or ally are at or below health percentage",
+        tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you are rading 25er i recommend too disable atleast Flash Heal, because you dont use it in 25er and just want too shield the entire raid",
         enabled = true,
         value = 80,
         key = "flashheal",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more",
-        tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (Low HP - High Priority)",
+        tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage (High Priority)",
         enabled = true,
         value = 40,
-        key = "powerwordshield",
+        key = "powerwordshieldlowhp",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more (Raid - Normal Priority)",
+        tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage (Normal Priority)",
+        enabled = true,
+        value = 60,
+        key = "powerwordshieldraid",
     },
 }
 
@@ -195,6 +203,7 @@ local queue = {
     "Pain Suppression",
     "Power Infusion",
     "Shadowfiend",
+    "Power Word: Shield (Low HP)",
     "Disease",
     "Dispel Magic",
     "Renew",
@@ -202,7 +211,7 @@ local queue = {
     "Prayer of Healing",
     "Penance",
     "Flash Heal",
-    "Power Word: Shield",
+    "Power Word: Shield (Raid)",
 }
 
 local abilities = {
@@ -408,8 +417,24 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield"] = function()
-        local value, enabled = GetSetting("powerwordshield")
+    ["Power Word: Shield (Low HP)"] = function()
+        local value, enabled = GetSetting("powerwordshieldlowhp")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].hp < value
+                and not ni.unit.debuff(ni.members[i].unit, spell.weakenedsoul, "player")
+                and not ni.unit.buff(ni.members[i].unit, spell.powerwordshield, "player")
+                and ni.spell.available(spell.powerwordshield)
+                and ni.spell.valid(ni.members[i].unit, spell.powerwordshield, false, true, true) then
+                    ni.spell.cast(spell.powerwordshield, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Power Word: Shield (Raid)"] = function()
+        local value, enabled = GetSetting("powerwordshieldraid")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp > value
