@@ -54,7 +54,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion if you are MP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion when you are MP% or less",
         tooltip = "Cast Power Infusion on yourself if you at or below mana percentage",
         enabled = true,
         value = 90,
@@ -62,26 +62,26 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you are %MP or less",
+        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend when you are %MP or less",
         tooltip = "Cast Shadowfiend on target if you at or below mana percentage",
         enabled = true,
-        value = 40,
+        value = 20,
         key = "shadowfiend",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff and are HP% or more",
+        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease when you or ally has a disease debuff and are HP% or more",
         tooltip = "Cast Cure Disease if you or ally has a disease debuff and have more health percentage",
         enabled = true,
-        value = "40",
+        value = 60,
         key = "curedisease",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff and are HP% or more",
+        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic when you or ally has a magic debuff and are HP% or more",
         tooltip = "Cast Dispell Magic if you or ally has a magic debuff and have more health percentage",
         enabled = true,
-        value = "40",
+        value = 60,
         key = "dispellmagic",
     },
     {
@@ -110,7 +110,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 3 allys are HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing when more than 3 allys are HP% or less",
         tooltip = "Cast Prayer of Healing if more than 3 allys are at or below health percentage",
         enabled = true,
         value = 60,
@@ -127,7 +127,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally are HP% or less",
-        tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you are rading 25er i recommend too disable atleast Flash Heal, because you dont use it in 25er and want too shield the entire raid",
+        tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you are Rading 25Man i recommend too disable atleast Flash Heal, because you dont use it in 25Man normally and rather want too shield the entire raid",
         enabled = true,
         value = 80,
         key = "flashheal",
@@ -145,7 +145,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or more (Normal Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or more health percentage",
         enabled = true,
-        value = 60,
+        value = 40,
         key = "powerwordshieldraid",
     },
 }
@@ -201,16 +201,16 @@ local queue = {
     "Pause Rotation",
     "Racial",
     "Pain Suppression",
+    "Power Word: Shield (Low HP)",
     "Power Infusion",
     "Shadowfiend",
-    "Power Word: Shield (Low HP)",
-    "Disease",
-    "Dispel Magic",
-    "Renew",
     "Prayer of Mending",
     "Prayer of Healing",
     "Penance",
     "Flash Heal",
+    "Renew",
+    "Disease",
+    "Dispel Magic",
     "Power Word: Shield (Raid)",
 }
 
@@ -246,26 +246,31 @@ local abilities = {
         if enabled then
             if ni.unit.isstunned("player")
             or ni.unit.isfleeing("player")
+            and ni.spell.available(spell.everymanforhimself)
             and race == "Human" then
                 ni.spell.cast(spell.everymanforhimself)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.bloodfury)
             and race == "Orc" then
                 ni.spell.cast(spell.bloodfury)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.beserking)
             and race == "Troll" then
                 ni.spell.cast(spell.beserking)
             end
 
             if ni.unit.debufftype("player", "Poison|Disease")
+            and ni.spell.available(spell.stoneform)
             and race == "Dwarf" then
-                ni.spell.cast(spell.Dwarf)
+                ni.spell.cast(spell.stoneform)
             end
 
             if ni.unit.isfleeing("player")
+            and ni.spell.available(spell.willoftheforsaken)
             and race == "Undead" then
                 ni.spell.cast(spell.willoftheforsaken)
             end

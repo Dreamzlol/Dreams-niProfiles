@@ -281,26 +281,31 @@ local abilities = {
         if enabled then
             if ni.unit.isstunned("player")
             or ni.unit.isfleeing("player")
+            and ni.spell.available(spell.everymanforhimself)
             and race == "Human" then
                 ni.spell.cast(spell.everymanforhimself)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.bloodfury)
             and race == "Orc" then
                 ni.spell.cast(spell.bloodfury)
             end
 
             if ni.unit.isboss("target")
+            and ni.spell.available(spell.beserking)
             and race == "Troll" then
                 ni.spell.cast(spell.beserking)
             end
 
             if ni.unit.debufftype("player", "Poison|Disease")
+            and ni.spell.available(spell.stoneform)
             and race == "Dwarf" then
-                ni.spell.cast(spell.Dwarf)
+                ni.spell.cast(spell.stoneform)
             end
 
             if ni.unit.isfleeing("player")
+            and ni.spell.available(spell.willoftheforsaken)
             and race == "Undead" then
                 ni.spell.cast(spell.willoftheforsaken)
             end
