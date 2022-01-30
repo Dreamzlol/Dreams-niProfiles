@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotations - Priest Discipline PvE
--- Version - 1.0.6
+-- Version - 1.0.7
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -11,6 +11,7 @@
 -- 1.0.4 Improved overall rotation
 -- 1.0.5 Added Racials
 -- 1.0.6 Added Power Word: Shield Priority
+-- 1.0.7 Added Tank priority
 --------------------------------
 local ni = ...
 
@@ -42,7 +43,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression when you or ally are HP% or less",
         tooltip = "Cast Pain Suppression if you or ally is at or below health percentage",
         enabled = true,
-        value = 30,
+        value = 20,
         key = "painsuppression",
     },
     {
@@ -89,20 +90,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew on Tanks",
-        tooltip = "Cast Renew and keeps it active on tanks",
-        enabled = true,
-        key = "renew",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending on Tanks",
-        tooltip = "Cast Prayer of Mending and keeps it active on tanks",
-        enabled = true,
-        key = "prayerofmending",
-    },
-    {
-        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing when more than 3 allys are HP% or less",
         tooltip = "Cast Prayer of Healing if more than 3 allys are at or below health percentage",
         enabled = true,
@@ -127,7 +114,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (Low HP, High Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (Low HP)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
         value = 40,
@@ -136,9 +123,57 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield (All)",
-        tooltip = "Cast Power Word: Shield on entire raid if we have no high priority member in raid",
+        tooltip = "Cast Power Word: Shield on all allys in raid",
         enabled = true,
         key = "powerwordshieldall",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "title",
+        text = "|cff00ccffTank Settings",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew",
+        tooltip = "Cast Renew and keeps it active on tanks",
+        enabled = true,
+        key = "renewtank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending",
+        tooltip = "Cast Prayer of Mending and keeps it active on tanks",
+        enabled = true,
+        key = "prayerofmendingtank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression if Tank is HP% or less (High Priority)",
+        tooltip = "Cast Pain Suppression if Tank is at or below health percentage",
+        enabled = true,
+        value = 40,
+        key = "painsuppressiontank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if Tank are HP% or less (High Priority)",
+        tooltip = "Cast Penance if Tank is at or below health percentage",
+        enabled = true,
+        value = 60,
+        key = "penancetank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if Tank is HP% or less (High Priority)",
+        tooltip = "Cast Power Word: Shield if Tank is at or below health percentage",
+        enabled = true,
+        value = 80,
+        key = "powerwordshieldtank",
     },
 }
 
@@ -181,20 +216,21 @@ local item = {
     drink = GetSpellInfo(57073),
 }
 
-local race = UnitRace("player");
-
 local queue = {
     "Inner Fire",
     "Pause Rotation",
-    "Pain Suppression",
-    "Power Word: Shield (Low HP)",
     "Power Infusion",
     "Shadowfiend",
-    "Prayer of Mending",
+    "Pain Suppression (Tank)",
+    "Power Word: Shield (Tank)",
+    "Penance (Tank)",
+    "Prayer of Mending (Tank)",
+    "Power Word: Shield (Low HP)",
+    "Pain Suppression",
     "Prayer of Healing",
     "Penance",
     "Flash Heal",
-    "Renew",
+    "Renew (Tank)",
     "Disease",
     "Dispel Magic",
     "Power Word: Shield (All)",
@@ -296,8 +332,56 @@ local abilities = {
         end
     end,
 
-    ["Renew"] = function()
-        local _, enabled = GetSetting("renew")
+    ["Power Word: Shield (Tank)"] = function()
+        local value, enabled = GetSetting("powerwordshieldtank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
+                and not ni.unit.debuff(ni.members[i].unit, spell.weakenedsoul, "player")
+                and not ni.unit.buff(ni.members[i].unit, spell.powerwordshield, "player")
+                and ni.spell.available(spell.powerwordshield)
+                and ni.spell.valid(ni.members[i].unit, spell.powerwordshield, false, true, true) then
+                    ni.spell.cast(spell.powerwordshield, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Penance (Tank)"] = function()
+        local value, enabled = GetSetting("penancetank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
+                and ni.spell.available(spell.penance)
+                and ni.spell.valid(ni.members[i].unit, spell.penance, false, true, true)
+                and not ni.unit.ismoving("player") then
+                    ni.spell.cast(spell.penance, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Pain Suppression (Tank)"] = function()
+        local value, enabled = GetSetting("painsuppressiontank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
+                and ni.spell.available(spell.painsuppression)
+                and ni.spell.valid(ni.members[i].unit, spell.painsuppression, false, true, true) then
+                    ni.spell.cast(spell.painsuppression, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Renew (Tank)"] = function()
+        local _, enabled = GetSetting("renewtank")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
@@ -311,8 +395,8 @@ local abilities = {
         end
     end,
 
-    ["Prayer of Mending"] = function()
-        local _, enabled = GetSetting("prayerofmending")
+    ["Prayer of Mending (Tank)"] = function()
+        local _, enabled = GetSetting("prayerofmendingtank")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank

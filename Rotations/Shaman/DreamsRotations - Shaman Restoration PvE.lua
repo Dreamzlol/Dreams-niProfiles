@@ -1,11 +1,12 @@
 --------------------------------
 -- DreamsRotations - Shaman Restoration PvE
--- Version - 1.0.1
+-- Version - 1.0.2
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
--- 1.0.1 Added tank priority
+-- 1.0.1 Added Glowing Twilight Scale
+-- 1.0.2 Added Tank priority
 --------------------------------
 local ni = ...
 
@@ -52,7 +53,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(51886)) .. ":26:26\124t Cleanse Spirit if you or ally has a Debuff and are HP% or more",
         tooltip = "Cast Cleanse Spirit if you or ally has Poison, Disease or Curse Debuff and are at or more than health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "cleansespirit",
     },
     {
@@ -60,7 +61,7 @@ local items = {
         text = "\124T" .. GetItemIcon(54589) .. ":26:26\124t Glowing Twilight Scale if 4 or more allys are HP% or less",
         tooltip = "Use Glowing Twilight Scale if 4 or more allys are HP% or less",
         enabled = true,
-        value = 70,
+        value = 80,
         key = "glowingtwilightscale",
     },
     {
@@ -72,21 +73,6 @@ local items = {
     },
     {
         type = "separator",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(49284)) .. ":26:26\124t Earth Shield on focus",
-        tooltip = "Cast Earth Shield on focus, remember too have the main tank as focus target",
-        enabled = true,
-        key = "earthshield",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if Tank is at HP% or less (High Priority)",
-        tooltip = "Cast Lesser Healing Wave if Tank is at or below health percentage (High Priority)",
-        enabled = true,
-        value = 60,
-        key = "lesserhealingwavetank",
     },
     {
         type = "entry",
@@ -117,7 +103,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(55459)) .. ":26:26\124t Chain Heal if 3 or more allys are HP% or less",
         tooltip = "Cast Chain Heal if 3 or more allys are at or below health percentage",
         enabled = true,
-        value = 80,
+        value = 90,
         key = "chainheal",
     },
     {
@@ -125,7 +111,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(16188)) .. ":26:26\124t Nature's Swiftness if you or ally are HP% or less",
         tooltip = "Cast Nature's Swiftness if you or ally is at or below health percentage",
         enabled = true,
-        value = 20,
+        value = 40,
         key = "naturesswiftness",
     },
     {
@@ -133,8 +119,33 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(55198)) .. ":26:26\124t Tidal Force if 4 or more allys are HP% or less",
         tooltip = "Cast Tidal Force if 4 or more allys are at or below health percentage",
         enabled = true,
-        value = 40,
+        value = 60,
         key = "tidalforce",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "title",
+        text = "|cff00ccffTank Settings",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(49273)) .. ":26:26\124t Healing Wave if Tank is at HP% or less (High Priority)",
+        tooltip = "Cast Healing Wave if Tank is at or below health percentage (High Priority)",
+        enabled = true,
+        value = 60,
+        key = "healingwavetank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(49284)) .. ":26:26\124t Earth Shield on Focus (Tank)",
+        tooltip = "Cast Earth Shield on focus, remember too have the main tank as focus target",
+        enabled = true,
+        key = "earthshield",
     },
 }
 
@@ -183,13 +194,13 @@ local queue = {
     "Cleanse Spirit",
     "Pause Rotation",
     "Mana Tide Totem",
-    "Lesser Healing Wave (Tank - High Priority)",
-    "Riptide",
     "Glowing Twilight Scale",
     "Nature's Swiftness",
     "Tidal Force",
-    "Healing Wave",
+    "Healing Wave (Tank)",
+    "Riptide",
     "Chain Heal",
+    "Healing Wave",
     "Lesser Healing Wave",
 }
 
@@ -240,7 +251,7 @@ local abilities = {
                 if ni.members[i].dispel
                 and ni.members[i].hp > value
                 and ni.spell.available(spell.cleansespirit)
-                and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, false, true, true) then
+                and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, true, true) then
                     ni.spell.cast(spell.cleansespirit, ni.members[i].unit)
                     return true;
                 end
@@ -248,16 +259,16 @@ local abilities = {
         end
     end,
 
-    ["Lesser Healing Wave (Tank - High Priority"] = function()
-        local value, enabled = GetSetting("lesserhealingwavetank")
+    ["Healing Wave (Tank)"] = function()
+        local value, enabled = GetSetting("healingwavetank")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
                 and ni.members[i].hp < value
-                and ni.spell.available(spell.lesserhealingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, false, true, true)
+                and ni.spell.available(spell.healingwave)
+                and ni.spell.valid(ni.members[i].unit, spell.healingwave, true, true)
                 and not ni.unit.ismoving("player") then
-                    ni.spell.cast(spell.lesserhealingwave, ni.members[i].unit)
+                    ni.spell.cast(spell.healingwave, ni.members[i].unit)
                     return true;
                 end
             end
@@ -270,7 +281,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.lesserhealingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, false, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.lesserhealingwave, ni.members[i].unit)
                     return true;
@@ -285,7 +296,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.healingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.healingwave, false, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.healingwave, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.healingwave, ni.members[i].unit)
                     return true;
@@ -301,7 +312,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if count >= 3
                 and ni.spell.available(spell.chainheal)
-                and ni.spell.valid(ni.members[i].unit, spell.chainheal, false, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.chainheal, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.chainheal, ni.members[i].unit)
                     return true;
@@ -354,7 +365,7 @@ local abilities = {
         local _, enabled = GetSetting("earthshield")
         if enabled then
             if ni.spell.available(spell.earthshield)
-            and ni.spell.valid("focus", spell.earthshield, false, true, true)
+            and ni.spell.valid("focus", spell.earthshield, true, true)
             and ni.unit.exists("focus")
             and not ni.unit.buff("focus", spell.earthshield, "player") then
                 ni.spell.cast(spell.earthshield, "focus")
@@ -380,7 +391,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.riptide)
-                and ni.spell.valid(ni.members[i].unit, spell.riptide, false, true, true) then
+                and ni.spell.valid(ni.members[i].unit, spell.riptide, true, true) then
                     ni.spell.cast(spell.riptide, ni.members[i].unit)
                     return true;
                 end
