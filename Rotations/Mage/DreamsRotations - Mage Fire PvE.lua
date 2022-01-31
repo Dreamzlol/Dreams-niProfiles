@@ -41,13 +41,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(42921)) .. ":26:26\124t Racial",
-        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
-        enabled = true,
-        key = "racial",
-    },
-    {
-        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(43046)) .. ":26:26\124t Molten Armor",
         tooltip = "Cast Molten Armor if not active",
         enabled = true,
@@ -194,24 +187,21 @@ local item = {
     drink = GetSpellInfo(57073),
 }
 
-local race = UnitRace("player");
-
 local queue = {
     "Molten Armor",
     "Arcane Brilliance",
     "Conjure Mana Gem",
     "Pause Rotation",
     "Auto Target",
-    "Racial",
     "Mana Sapphire",
     "Evocation",
-    "Pyroblast",
     "Scorch",
+    "Mirror Image",
+    "Hyperspeed Accelerators",
+    "Combustion",
+    "Pyroblast",
     "Fire Blast",
     "Living Bomb",
-    "Hyperspeed Accelerators",
-    "Mirror Image",
-    "Combustion",
     "Fireball",
 }
 
@@ -281,42 +271,6 @@ local abilities = {
         end
     end,
 
-    ["Racial"] = function()
-        local _, enabled = GetSetting("racial")
-        if enabled then
-            if ni.unit.isstunned("player")
-            or ni.unit.isfleeing("player")
-            and ni.spell.available(spell.everymanforhimself)
-            and race == "Human" then
-                ni.spell.cast(spell.everymanforhimself)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.bloodfury)
-            and race == "Orc" then
-                ni.spell.cast(spell.bloodfury)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.beserking)
-            and race == "Troll" then
-                ni.spell.cast(spell.beserking)
-            end
-
-            if ni.unit.debufftype("player", "Poison|Disease")
-            and ni.spell.available(spell.stoneform)
-            and race == "Dwarf" then
-                ni.spell.cast(spell.stoneform)
-            end
-
-            if ni.unit.isfleeing("player")
-            and ni.spell.available(spell.willoftheforsaken)
-            and race == "Undead" then
-                ni.spell.cast(spell.willoftheforsaken)
-            end
-        end
-    end,
-
     ["Mana Sapphire"] = function()
         local value, enabled = GetSetting("manasapphire")
         if enabled then
@@ -343,22 +297,14 @@ local abilities = {
     ["Scorch"] = function()
         local _, enabled = GetSetting("scorch")
         if enabled then
-            if ScorchCastTime and GetTime() - ScorchCastTime > 2 then
-                ScorchCastTime = nil
-            end
-
-            if not ScorchCastTime then
-                ScorchCastTime = GetTime()
-
-                if ni.spell.available(spell.scorch)
-                and ni.spell.valid("target", spell.scorch, true, true)
-                and not ni.unit.debuff("target", spell.improvedscorch)
-                and not ni.unit.debuff("target", spell.shadowmastery)
-                and not ni.unit.debuff("target", spell.winterschill)
-                and not ni.unit.ismoving("player") then
-                    ni.spell.cast(spell.scorch, "target")
-                    return true;
-                end
+            if ni.spell.available(spell.scorch)
+            and ni.spell.valid("target", spell.scorch, true, true)
+            and not ni.unit.debuff("target", spell.improvedscorch)
+            and not ni.unit.debuff("target", spell.shadowmastery)
+            and not ni.unit.debuff("target", spell.winterschill)
+            and not ni.unit.ismoving("player") then
+                ni.spell.cast(spell.scorch, "target")
+                return true;
             end
         end
     end,

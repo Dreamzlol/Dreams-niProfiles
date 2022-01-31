@@ -1,12 +1,14 @@
 --------------------------------
 -- DreamsRotations - Shaman Restoration PvE
--- Version - 1.0.2
+-- Version - 1.0.4
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
 -- 1.0.1 Added Glowing Twilight Scale
 -- 1.0.2 Added Tank priority
+-- 1.0.3 Added Auto Totems
+-- 1.0.4 Added Runic Mana Potion
 --------------------------------
 local ni = ...
 
@@ -14,7 +16,7 @@ local items = {
     settingsfile = "DreamsRotations - Shaman Restoration PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.1",
+        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.4",
     },
     {
         type = "separator",
@@ -42,11 +44,26 @@ local items = {
     },
     {
         type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(66842)) .. ":26:26\124t Call of the Elements",
+        tooltip = "Cast Call of the Elements if you have no Totems, be sure you have Wrath of Air Totem selected in Call of the Elements",
+        enabled = true,
+        key = "calloftheelements",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(16190)) .. ":26:26\124t Mana Tide Totem if you are MP% or less",
         tooltip = "Cast Mana Tide Totem if you at or below mana percentage",
         enabled = true,
         value = 20,
         key = "manatidetotem",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
+        tooltip = "Use Runic Mana Potion if you at or below mana percentage",
+        enabled = true,
+        value = 10,
+        key = "runicmanapotion",
     },
     {
         type = "entry",
@@ -179,12 +196,15 @@ local spell = {
     tidalforce = GetSpellInfo(55198),
     cleansespirit = GetSpellInfo(51886),
     earthlivingweapon = GetSpellInfo(51994),
+    calloftheelements = GetSpellInfo(66842),
+    wrathofairtotem = GetSpellInfo(2895),
 }
 
 local item = {
     food = GetSpellInfo(45548),
     drink = GetSpellInfo(57073),
-    glowingtwilightscale = 54589,
+    glowingtwilightscale = GetItemInfo(54589),
+    runicmanapotion = GetItemInfo(33448),
 }
 
 local queue = {
@@ -194,6 +214,8 @@ local queue = {
     "Cleanse Spirit",
     "Pause Rotation",
     "Mana Tide Totem",
+    "Runic Mana Potion",
+    "Call of the Elements",
     "Glowing Twilight Scale",
     "Nature's Swiftness",
     "Tidal Force",
@@ -231,6 +253,17 @@ local abilities = {
         end
     end,
 
+    ["Call of the Elements"] = function()
+        local _, enabled = GetSetting("calloftheelements")
+        if enabled then
+            if ni.spell.available(spell.calloftheelements)
+            and not ni.unit.buff("player", spell.wrathofairtotem) then
+                ni.spell.cast(spell.calloftheelements)
+                return true;
+            end
+        end
+    end,
+
     ["Earthliving Weapon"] = function()
         local _, enabled = GetSetting("earthlivingweapon")
         if enabled then
@@ -251,7 +284,7 @@ local abilities = {
                 if ni.members[i].dispel
                 and ni.members[i].hp > value
                 and ni.spell.available(spell.cleansespirit)
-                and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, true, true) then
+                and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, false, true, true) then
                     ni.spell.cast(spell.cleansespirit, ni.members[i].unit)
                     return true;
                 end
@@ -266,7 +299,7 @@ local abilities = {
                 if ni.members[i].istank
                 and ni.members[i].hp < value
                 and ni.spell.available(spell.healingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.healingwave, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.healingwave, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.healingwave, ni.members[i].unit)
                     return true;
@@ -281,7 +314,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.lesserhealingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.lesserhealingwave, ni.members[i].unit)
                     return true;
@@ -296,7 +329,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.healingwave)
-                and ni.spell.valid(ni.members[i].unit, spell.healingwave, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.healingwave, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.healingwave, ni.members[i].unit)
                     return true;
@@ -312,7 +345,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if count >= 3
                 and ni.spell.available(spell.chainheal)
-                and ni.spell.valid(ni.members[i].unit, spell.chainheal, true, true)
+                and ni.spell.valid(ni.members[i].unit, spell.chainheal, false, true, true)
                 and not ni.unit.ismoving("player") then
                     ni.spell.cast(spell.chainheal, ni.members[i].unit)
                     return true;
@@ -330,6 +363,18 @@ local abilities = {
             and ni.player.itemcd(item.glowingtwilightscale) == 0
             and not ni.unit.ismoving("player") then
                 ni.player.useitem(item.glowingtwilightscale)
+                return true;
+            end
+        end
+    end,
+
+    ["Runic Mana Potion"] = function()
+        local value, enabled = GetSetting("runicmanapotion")
+        if enabled then
+            if ni.player.itemcd(item.runicmanapotion) == 0
+            and ni.player.power() < value
+            and ni.player.hasitem(item.runicmanapotion) then
+                ni.player.useitem(item.runicmanapotion)
                 return true;
             end
         end
@@ -365,7 +410,7 @@ local abilities = {
         local _, enabled = GetSetting("earthshield")
         if enabled then
             if ni.spell.available(spell.earthshield)
-            and ni.spell.valid("focus", spell.earthshield, true, true)
+            and ni.spell.valid("focus", spell.earthshield, false, true, true)
             and ni.unit.exists("focus")
             and not ni.unit.buff("focus", spell.earthshield, "player") then
                 ni.spell.cast(spell.earthshield, "focus")
@@ -391,7 +436,7 @@ local abilities = {
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
                 and ni.spell.available(spell.riptide)
-                and ni.spell.valid(ni.members[i].unit, spell.riptide, true, true) then
+                and ni.spell.valid(ni.members[i].unit, spell.riptide, false, true, true) then
                     ni.spell.cast(spell.riptide, ni.members[i].unit)
                     return true;
                 end

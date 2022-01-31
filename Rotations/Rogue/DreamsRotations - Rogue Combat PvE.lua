@@ -40,13 +40,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(42921)) .. ":26:26\124t Racial",
-        tooltip = "Every Man for Himself if you are stunned or feared, Blood Fury if your target is a Boss, Stoneform if you have a Poison or Disease Debuff, Beserking if your target is a Boss, Will of the Forsaken if you are feared, charm or sleep effect",
-        enabled = true,
-        key = "racial",
-    },
-    {
-        type = "entry",
         text = "\124T" .. GetItemIcon(43233) .. ":26:26\124t Apply Poisons on weapons",
         tooltip = "Apply Instant Poison on your Mainhand and Deadly Poison on your Offhand",
         enabled = true,
@@ -158,11 +151,6 @@ local spell = {
     rupture = GetSpellInfo(48672),
     eviscerate = GetSpellInfo(48668),
     sinisterstrike = GetSpellInfo(48638),
-    everymanforhimself = GetSpellInfo(59752),
-    bloodfury = GetSpellInfo(20572),
-    stoneform = GetSpellInfo(20594),
-    beserking = GetSpellInfo(26297),
-    willoftheforsaken = GetSpellInfo(7744),
 }
 
 local item = {
@@ -172,14 +160,11 @@ local item = {
     deadlypoison = GetItemInfo(43233),
 }
 
-local race = UnitRace("player");
-
 local queue = {
     "Poisons",
     "Pause Rotation",
     "Auto Target",
     "Start Attack",
-    "Racial",
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
     "Slice and Dice",
@@ -257,42 +242,6 @@ local abilities = {
         and not IsCurrentSpell(spell.startattack) then
             ni.spell.cast(spell.startattack)
             return true;
-        end
-    end,
-
-    ["Racial"] = function()
-        local _, enabled = GetSetting("racial")
-        if enabled then
-            if ni.unit.isstunned("player")
-            or ni.unit.isfleeing("player")
-            and ni.spell.available(spell.everymanforhimself)
-            and race == "Human" then
-                ni.spell.cast(spell.everymanforhimself)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.bloodfury)
-            and race == "Orc" then
-                ni.spell.cast(spell.bloodfury)
-            end
-
-            if ni.unit.isboss("target")
-            and ni.spell.available(spell.beserking)
-            and race == "Troll" then
-                ni.spell.cast(spell.beserking)
-            end
-
-            if ni.unit.debufftype("player", "Poison|Disease")
-            and ni.spell.available(spell.stoneform)
-            and race == "Dwarf" then
-                ni.spell.cast(spell.stoneform)
-            end
-
-            if ni.unit.isfleeing("player")
-            and ni.spell.available(spell.willoftheforsaken)
-            and race == "Undead" then
-                ni.spell.cast(spell.willoftheforsaken)
-            end
         end
     end,
 
