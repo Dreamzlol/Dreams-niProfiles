@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotations - Priest Discipline PvE
--- Version - 1.0.7
+-- Version - 1.0.8
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -12,6 +12,7 @@
 -- 1.0.5 Added Racials
 -- 1.0.6 Added Power Word: Shield Priority
 -- 1.0.7 Added Tank priority
+-- 1.0.8 Added Runic Mana Potion
 --------------------------------
 local ni = ...
 
@@ -19,7 +20,7 @@ local items = {
     settingsfile = "DreamsRotations - Priest Discipline PvE.json",
     {
         type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.6",
+        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.8",
     },
     {
         type = "separator",
@@ -40,15 +41,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression when you or ally are HP% or less",
-        tooltip = "Cast Pain Suppression if you or ally is at or below health percentage",
-        enabled = true,
-        value = 20,
-        key = "painsuppression",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion when you are MP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(10060)) .. ":26:26\124t Power Infusion if you are MP% or less",
         tooltip = "Cast Power Infusion on yourself if you at or below mana percentage",
         enabled = true,
         value = 90,
@@ -56,7 +49,15 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend when you are %MP or less",
+        text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
+        tooltip = "Use Runic Mana Potion if you at or below mana percentage",
+        enabled = true,
+        value = 10,
+        key = "runicmanapotion",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you are %MP or less",
         tooltip = "Cast Shadowfiend on target if you at or below mana percentage",
         enabled = true,
         value = 20,
@@ -64,7 +65,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease when you or ally has a disease debuff and are HP% or more",
+        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff and are HP% or more",
         tooltip = "Cast Cure Disease if you or ally has a disease debuff and have more health percentage",
         enabled = true,
         value = 60,
@@ -72,7 +73,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic when you or ally has a magic debuff and are HP% or more",
+        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff and are HP% or more",
         tooltip = "Cast Dispell Magic if you or ally has a magic debuff and have more health percentage",
         enabled = true,
         value = 60,
@@ -90,7 +91,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing when more than 3 allys are HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 3 allys are HP% or less",
         tooltip = "Cast Prayer of Healing if more than 3 allys are at or below health percentage",
         enabled = true,
         value = 60,
@@ -98,7 +99,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance when you or ally are HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if you or ally are HP% or less",
         tooltip = "Cast Penance if you or ally are at or below health percentage",
         enabled = true,
         value = 80,
@@ -106,7 +107,15 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal when you or ally are HP% or less",
+        text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression if you or ally are HP% or less",
+        tooltip = "Cast Pain Suppression if you or ally is at or below health percentage",
+        enabled = true,
+        value = 20,
+        key = "painsuppression",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal if you or ally are HP% or less",
         tooltip = "Cast Flash Heal if you or ally are at or below health percentage. If you raid at 25man i recommend too disable Flash Heal, because you dont use Flash Heal in 25man you rather want too shield the entire raid",
         enabled = true,
         value = 80,
@@ -114,7 +123,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield when you or ally are HP% or less (Low HP)",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (Low HP)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
         value = 40,
@@ -214,6 +223,7 @@ local spell = {
 local item = {
     food = GetSpellInfo(45548),
     drink = GetSpellInfo(57073),
+    runicmanapotion = GetItemInfo(33448),
 }
 
 local queue = {
@@ -221,6 +231,7 @@ local queue = {
     "Pause Rotation",
     "Power Infusion",
     "Shadowfiend",
+    "Runic Mana Potion",
     "Pain Suppression (Tank)",
     "Power Word: Shield (Tank)",
     "Penance (Tank)",
@@ -297,6 +308,18 @@ local abilities = {
             and ni.unit.exists("target")
             and ni.player.power() < value then
                 ni.spell.cast(spell.shadowfiend, "target")
+                return true;
+            end
+        end
+    end,
+
+    ["Runic Mana Potion"] = function()
+        local value, enabled = GetSetting("runicmanapotion")
+        if enabled then
+            if ni.player.itemcd(item.runicmanapotion) == 0
+            and ni.player.power() < value
+            and ni.player.hasitem(item.runicmanapotion) then
+                ni.player.useitem(item.runicmanapotion)
                 return true;
             end
         end
