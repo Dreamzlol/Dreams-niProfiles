@@ -17,6 +17,7 @@ local items = {
     {
         type = "title",
         text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.4",
+        tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
         type = "separator",
@@ -62,7 +63,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 10,
+        value = 20,
         key = "runicmanapotion",
     },
     {
@@ -78,7 +79,7 @@ local items = {
         text = "\124T" .. GetItemIcon(54589) .. ":26:26\124t Glowing Twilight Scale if 4 or more allys are HP% or less",
         tooltip = "Use Glowing Twilight Scale if 4 or more allys are HP% or less",
         enabled = true,
-        value = 80,
+        value = 60,
         key = "glowingtwilightscale",
     },
     {
@@ -96,7 +97,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if you or ally are HP% or less",
         tooltip = "Cast Lesser Healing Wave if you or ally is at or below health percentage",
         enabled = true,
-        value = 90,
+        value = 80,
         key = "lesserhealingwave",
     },
     {
@@ -112,7 +113,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(61301)) .. ":26:26\124t Riptide if you or ally are HP% or less",
         tooltip = "Cast Riptide if you or ally is at or below health percentage",
         enabled = true,
-        value = 90,
+        value = 80,
         key = "riptide",
     },
     {
@@ -148,6 +149,14 @@ local items = {
     },
     {
         type = "separator",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if Tank is at HP% or less (High Priority)",
+        tooltip = "Cast Lesser Healing Wave if Tank is at or below health percentage (High Priority)",
+        enabled = true,
+        value = 80,
+        key = "lesserhealingwavetank",
     },
     {
         type = "entry",
@@ -203,7 +212,6 @@ local spell = {
 local item = {
     food = GetSpellInfo(45548),
     drink = GetSpellInfo(57073),
-    glowingtwilightscale = GetItemInfo(54589),
     runicmanapotion = GetItemInfo(33448),
 }
 
@@ -219,8 +227,9 @@ local queue = {
     "Glowing Twilight Scale",
     "Nature's Swiftness",
     "Tidal Force",
-    "Healing Wave (Tank)",
     "Riptide",
+    "Healing Wave (Tank)",
+    "Lesser Healing Wave (Tank)",
     "Chain Heal",
     "Healing Wave",
     "Lesser Healing Wave",
@@ -323,6 +332,22 @@ local abilities = {
         end
     end,
 
+    ["Lesser Healing Wave (Tank)"] = function()
+        local value, enabled = GetSetting("lesserhealingwavetank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
+                and ni.spell.available(spell.lesserhealingwave)
+                and ni.spell.valid(ni.members[i].unit, spell.lesserhealingwave, false, true, true)
+                and not ni.unit.ismoving("player") then
+                    ni.spell.cast(spell.lesserhealingwave, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
     ["Healing Wave"] = function()
         local value, enabled = GetSetting("healingwave")
         if enabled then
@@ -359,10 +384,9 @@ local abilities = {
         if enabled then
             local count = ni.members.below(value);
             if count >= 4
-            and ni.player.hasitemequipped(item.glowingtwilightscale)
-            and ni.player.itemcd(item.glowingtwilightscale) == 0
-            and not ni.unit.ismoving("player") then
-                ni.player.useitem(item.glowingtwilightscale)
+            and ni.player.hasitemequipped(54589)
+            and ni.player.itemcd(54589) == 0 then
+                ni.player.useitem(54589)
                 return true;
             end
         end

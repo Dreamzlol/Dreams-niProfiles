@@ -17,6 +17,7 @@ local items = {
     {
         type = "title",
         text = "|cff00ccffDreamsRotations |cffffffff- Arcane Mage PvE - |cff888888v1.0.4",
+        tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
         type = "separator",

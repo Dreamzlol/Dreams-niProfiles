@@ -21,6 +21,7 @@ local items = {
     {
         type = "title",
         text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.8",
+        tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
         type = "separator",
@@ -52,7 +53,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 10,
+        value = 20,
         key = "runicmanapotion",
     },
     {
@@ -68,7 +69,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff and are HP% or more",
         tooltip = "Cast Cure Disease if you or ally has a disease debuff and have more health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "curedisease",
     },
     {
@@ -76,7 +77,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff and are HP% or more",
         tooltip = "Cast Dispell Magic if you or ally has a magic debuff and have more health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "dispellmagic",
     },
     {
@@ -173,7 +174,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if Tank are HP% or less (High Priority)",
         tooltip = "Cast Penance if Tank is at or below health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "penancetank",
     },
     {
@@ -233,13 +234,13 @@ local queue = {
     "Shadowfiend",
     "Runic Mana Potion",
     "Pain Suppression (Tank)",
-    "Power Word: Shield (Tank)",
-    "Penance (Tank)",
-    "Prayer of Mending (Tank)",
-    "Power Word: Shield (Low HP)",
     "Pain Suppression",
-    "Prayer of Healing",
+    "Power Word: Shield (Tank)",
+    "Power Word: Shield (Low HP)",
+    "Penance (Tank)",
     "Penance",
+    "Prayer of Mending (Tank)",
+    "Prayer of Healing",
     "Flash Heal",
     "Renew (Tank)",
     "Disease",
@@ -496,7 +497,7 @@ local abilities = {
     end,
 
     ["Power Word: Shield (All)"] = function()
-        local value, enabled = GetSetting("powerwordshieldall")
+        local _, enabled = GetSetting("powerwordshieldall")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp <= 100
