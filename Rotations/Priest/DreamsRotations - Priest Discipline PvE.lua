@@ -263,7 +263,6 @@ local abilities = {
     ["Pause Rotation"] = function()
         if IsMounted()
         or UnitIsDeadOrGhost("player")
-        or UnitIsDeadOrGhost("target")
         or UnitUsingVehicle("player")
         or UnitInVehicle("player")
         or not UnitAffectingCombat("player")
