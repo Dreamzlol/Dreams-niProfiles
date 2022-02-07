@@ -124,10 +124,10 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (Low HP)",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (High Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "powerwordshieldlowhp",
     },
     {
@@ -150,21 +150,28 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew",
-        tooltip = "Cast Renew and keeps it active on tank",
+        tooltip = "Cast Renew on tanks",
         enabled = true,
         key = "renewtank",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending",
-        tooltip = "Cast Prayer of Mending and keeps it active on tank",
+        tooltip = "Cast Prayer of Mending on tanks",
         enabled = true,
         key = "prayerofmendingtank",
     },
     {
         type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield",
+        tooltip = "Cast Power Word: Shield on tanks",
+        enabled = true,
+        key = "powerwordshieldtank",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(33206)) .. ":26:26\124t Pain Suppression if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Pain Suppression if Tank is at or below health percentage",
+        tooltip = "Cast Pain Suppression if tank is at or below health percentage",
         enabled = true,
         value = 40,
         key = "painsuppressiontank",
@@ -172,7 +179,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Flash Heal if Tank is at or below health percentage",
+        tooltip = "Cast Flash Heal if tank is at or below health percentage",
         enabled = true,
         value = 80,
         key = "flashhealtank",
@@ -180,18 +187,10 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Penance if Tank is at or below health percentage",
+        tooltip = "Cast Penance if tank is at or below health percentage",
         enabled = true,
         value = 80,
         key = "penancetank",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Power Word: Shield if Tank is at or below health percentage",
-        enabled = true,
-        value = 80,
-        key = "powerwordshieldtank",
     },
 }
 
@@ -249,8 +248,8 @@ local queue = {
     "Penance",
     "Flash Heal (Tank)",
     "Flash Heal",
-    "Prayer of Mending (Tank)",
     "Prayer of Healing",
+    "Prayer of Mending (Tank)",
     "Renew (Tank)",
     "Disease",
     "Dispel Magic",
@@ -365,11 +364,10 @@ local abilities = {
     end,
 
     ["Power Word: Shield (Tank)"] = function()
-        local value, enabled = GetSetting("powerwordshieldtank")
+        local _, enabled = GetSetting("powerwordshieldtank")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
-                and ni.members[i].hp < value
                 and not ni.unit.debuff(ni.members[i].unit, spell.weakenedsoul, "player")
                 and not ni.unit.buff(ni.members[i].unit, spell.powerwordshield, "player")
                 and ni.spell.available(spell.powerwordshield)
