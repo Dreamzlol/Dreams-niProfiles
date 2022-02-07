@@ -127,7 +127,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (Low HP)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
-        value = 40,
+        value = 60,
         key = "powerwordshieldlowhp",
     },
     {
@@ -150,14 +150,14 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48068)) .. ":26:26\124t Renew",
-        tooltip = "Cast Renew and keeps it active on tanks",
+        tooltip = "Cast Renew and keeps it active on tank",
         enabled = true,
         key = "renewtank",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48113)) .. ":26:26\124t Prayer of Mending",
-        tooltip = "Cast Prayer of Mending and keeps it active on tanks",
+        tooltip = "Cast Prayer of Mending and keeps it active on tank",
         enabled = true,
         key = "prayerofmendingtank",
     },
@@ -171,7 +171,15 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if Tank are HP% or less (High Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(48071)) .. ":26:26\124t Flash Heal if Tank is HP% or less (High Priority)",
+        tooltip = "Cast Flash Heal if Tank is at or below health percentage",
+        enabled = true,
+        value = 80,
+        key = "flashhealtank",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(53007)) .. ":26:26\124t Penance if Tank is HP% or less (High Priority)",
         tooltip = "Cast Penance if Tank is at or below health percentage",
         enabled = true,
         value = 80,
@@ -231,17 +239,18 @@ local queue = {
     "Inner Fire",
     "Pause Rotation",
     "Power Infusion",
-    "Shadowfiend",
     "Runic Mana Potion",
+    "Shadowfiend",
     "Pain Suppression (Tank)",
     "Pain Suppression",
     "Power Word: Shield (Tank)",
     "Power Word: Shield (Low HP)",
     "Penance (Tank)",
     "Penance",
+    "Flash Heal (Tank)",
+    "Flash Heal",
     "Prayer of Mending (Tank)",
     "Prayer of Healing",
-    "Flash Heal",
     "Renew (Tank)",
     "Disease",
     "Dispel Magic",
@@ -469,6 +478,22 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp < value
+                and ni.spell.available(spell.flashheal)
+                and ni.spell.valid(ni.members[i].unit, spell.flashheal, false, true, true)
+                and not ni.unit.ismoving("player") then
+                    ni.spell.cast(spell.flashheal, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Flash Heal (Tank)"] = function()
+        local value, enabled = GetSetting("flashhealtank")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].istank
+                and ni.members[i].hp < value
                 and ni.spell.available(spell.flashheal)
                 and ni.spell.valid(ni.members[i].unit, spell.flashheal, false, true, true)
                 and not ni.unit.ismoving("player") then

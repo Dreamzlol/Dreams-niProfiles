@@ -34,6 +34,14 @@ local items = {
     },
     {
         type = "entry",
+        text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
+        tooltip = "Use Runic Mana Potion if you at or below mana percentage",
+        enabled = true,
+        value = 20,
+        key = "runicmanapotion",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(29166)) .. ":26:26\124t Innervate if you are %MP or less",
         tooltip = "Cast Innervate if you at or below mana percentage",
         enabled = true,
@@ -60,13 +68,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation (All)",
-        tooltip = "Cast Rejuvenation on all allys in raid",
-        enabled = true,
-        key = "rejuvenationall",
-    },
-    {
-        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(53251)) .. ":26:26\124t Wild Growth if you or ally are HP% or less",
         tooltip = "Cast Wild Growth if you or ally are at or below health percentage",
         enabled = true,
@@ -90,6 +91,21 @@ local items = {
         key = "nourish",
     },
     {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation if you or ally are HP% or less (Low HP)",
+        tooltip = "Cast Rejuvenation if you or ally are at or below health percentage",
+        enabled = true,
+        value = 60,
+        key = "rejuvenationlowhp",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation (All)",
+        tooltip = "Cast Rejuvenation on all allys in raid",
+        enabled = true,
+        key = "rejuvenationall",
+    },
+    {
         type = "separator",
     },
     {
@@ -109,21 +125,21 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48451)) .. ":26:26\124t Lifebloom (High Priority)",
-        tooltip = "Cast Lifebloom if you have clearcasting on Tank",
+        tooltip = "Cast Lifebloom and stack it on tank, will only be cast when clearcasting buff",
         enabled = true,
         key = "lifebloomtank",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(48443)) .. ":26:26\124t Regrowth (High Priority)",
-        tooltip = "Cast Regrowth on Tank",
+        tooltip = "Cast Regrowth and keeps buff up on tanks",
         enabled = true,
         key = "regrowthtank",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(18562)) .. ":26:26\124t Swiftmend if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Swiftmend if Tank is at or below health percentage",
+        tooltip = "Cast Swiftmend if tank is at or below health percentage",
         enabled = true,
         value = 60,
         key = "swiftmendtank",
@@ -131,7 +147,7 @@ local items = {
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(50464)) .. ":26:26\124t Nourish if Tank is HP% or less (High Priority)",
-        tooltip = "Cast Nourish if Tank is at or below health percentage",
+        tooltip = "Cast Nourish if tank is at or below health percentage",
         enabled = true,
         value = 80,
         key = "nourishtank",
@@ -177,16 +193,18 @@ local item = {
 local queue = {
     "Pause Rotation",
     "Tree of Life",
+    "Runic Mana Potion",
     "Innervate",
     "Glowing Twilight Scale",
     "Swiftmend (Tank)",
-    "Swiftmend",
-    "Wild Growth",
-    "Nourish (Tank)",
-    "Nourish",
     "Lifebloom (Tank)",
-    "Rejuvenation (Tank)",
+    "Swiftmend",
     "Regrowth (Tank)",
+    "Nourish (Tank)",
+    "Wild Growth",
+    "Nourish",
+    "Rejuvenation (Tank)",
+    "Rejuvenation (Low HP)",
     "Rejuvenation (All)",
 }
 
@@ -211,6 +229,18 @@ local abilities = {
             if ni.spell.available(spell.treeoflife)
             and not ni.unit.buff("player", spell.treeoflife) then
                 ni.spell.cast(spell.treeoflife)
+                return true;
+            end
+        end
+    end,
+
+    ["Runic Mana Potion"] = function()
+        local value, enabled = GetSetting("runicmanapotion")
+        if enabled then
+            if ni.player.itemcd(item.runicmanapotion) == 0
+            and ni.player.power() < value
+            and ni.player.hasitem(item.runicmanapotion) then
+                ni.player.useitem(item.runicmanapotion)
                 return true;
             end
         end
@@ -353,6 +383,21 @@ local abilities = {
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].istank
+                and not ni.unit.buff(ni.members[i].unit, spell.rejuvenation, "player")
+                and ni.spell.available(spell.rejuvenation)
+                and ni.spell.valid(ni.members[i].unit, spell.rejuvenation, false, true, true) then
+                    ni.spell.cast(spell.rejuvenation, ni.members[i].unit)
+                    return true;
+                end
+            end
+        end
+    end,
+
+    ["Rejuvenation (Low HP)"] = function()
+        local value, enabled = GetSetting("rejuvenationlowhp")
+        if enabled then
+            for i = 1, #ni.members do
+                if ni.members[i].hp < value
                 and not ni.unit.buff(ni.members[i].unit, spell.rejuvenation, "player")
                 and ni.spell.available(spell.rejuvenation)
                 and ni.spell.valid(ni.members[i].unit, spell.rejuvenation, false, true, true) then
