@@ -197,14 +197,14 @@ local queue = {
     "Innervate",
     "Glowing Twilight Scale",
     "Swiftmend (Tank)",
-    "Lifebloom (Tank)",
     "Swiftmend",
-    "Regrowth (Tank)",
+    "Lifebloom (Tank)",
     "Nourish (Tank)",
-    "Wild Growth",
     "Nourish",
-    "Rejuvenation (Tank)",
+    "Wild Growth",
+    "Regrowth (Tank)",
     "Rejuvenation (Low HP)",
+    "Rejuvenation (Tank)",
     "Rejuvenation (All)",
 }
 
@@ -371,7 +371,7 @@ local abilities = {
                 and ni.spell.valid(ni.members[i].unit, spell.regrowth, false, true, true)
                 and not ni.unit.buff(ni.members[i].unit, spell.regrowth, "player")
                 and not ni.unit.ismoving("player") then
-                    ni.spell.cast(spell.regrowth, ni.members[i].unit)
+                    ni.spell.delaycast(spell.regrowth, ni.members[i].unit, 2.0)
                     return true;
                 end
             end
