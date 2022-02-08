@@ -194,18 +194,18 @@ local item = {
 local queue = {
     "Pause Rotation",
     "Tree of Life",
-    "Runic Mana Potion",
     "Innervate",
+    "Runic Mana Potion",
     "Glowing Twilight Scale",
     "Swiftmend (Tank)",
-    "Swiftmend",
-    "Lifebloom (Tank)",
     "Nourish (Tank)",
-    "Nourish",
+    "Swiftmend",
     "Wild Growth",
+    "Lifebloom (Tank)",
+    "Rejuvenation (Tank)",
     "Regrowth (Tank)",
     "Rejuvenation (Low HP)",
-    "Rejuvenation (Tank)",
+    "Nourish",
     "Rejuvenation (All)",
 }
 
