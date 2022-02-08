@@ -100,10 +100,10 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 3 allys are HP% or less",
-        tooltip = "Cast Prayer of Healing if more than 3 allys are at or below health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(48072)) .. ":26:26\124t Prayer of Healing if more than 4 allys are HP% or less",
+        tooltip = "Cast Prayer of Healing if more than 4 allys are at or below health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "prayerofhealing",
     },
     {
@@ -135,15 +135,15 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (High Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "powerwordshieldlowhp",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield (All)",
-        tooltip = "Cast Power Word: Shield on all allys in raid",
+        text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield (Raid)",
+        tooltip = "Cast Power Word: Shield on all raid member",
         enabled = true,
-        key = "powerwordshieldall",
+        key = "powerwordshieldraid",
     },
     {
         type = "separator",
@@ -262,7 +262,7 @@ local queue = {
     "Renew (Tank)",
     "Disease",
     "Dispel Magic",
-    "Power Word: Shield (All)",
+    "Power Word: Shield (Raid)",
 }
 
 local abilities = {
@@ -466,7 +466,7 @@ local abilities = {
         if enabled then
             local count = ni.members.below(value);
             for i = 1, #ni.members do
-                if count >= 3
+                if count >= 4
                 and ni.spell.available(spell.prayerofhealing)
                 and ni.spell.valid(ni.members[i].unit, spell.prayerofhealing, false, true, true)
                 and not ni.unit.ismoving("player") then
@@ -539,8 +539,8 @@ local abilities = {
         end
     end,
 
-    ["Power Word: Shield (All)"] = function()
-        local _, enabled = GetSetting("powerwordshieldall")
+    ["Power Word: Shield (Raid)"] = function()
+        local _, enabled = GetSetting("powerwordshieldraid")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].hp <= 100
