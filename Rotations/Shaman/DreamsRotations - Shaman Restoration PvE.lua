@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotations - Shaman Restoration PvE
--- Version - 1.0.4
+-- Version - 1.0.5
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -9,14 +9,15 @@
 -- 1.0.2 Added Tank priority
 -- 1.0.3 Added Auto Totems
 -- 1.0.4 Added Runic Mana Potion
+-- 1.0.5 Adjust Mana Cooldown and Mana Potion
 --------------------------------
 local ni = ...
 
 local items = {
     settingsfile = "DreamsRotations - Shaman Restoration PvE.json",
     {
-        type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.4",
+        type = "entry",
+        text = "|cff00ccffDreamsRotations |cffffffff- Shaman Restoration PvE - |cff888888v1.0.5",
         tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
@@ -55,7 +56,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(16190)) .. ":26:26\124t Mana Tide Totem if you are MP% or less",
         tooltip = "Cast Mana Tide Totem if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 60,
         key = "manatidetotem",
     },
     {
@@ -63,7 +64,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 40,
+        value = 20,
         key = "runicmanapotion",
     },
     {

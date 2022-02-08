@@ -1,18 +1,19 @@
 --------------------------------
 -- DreamsRotations - Druid Restoration PvE
--- Version - 1.0.0
+-- Version - 1.0.1
 -- Author - Dreams
 --------------------------------
 -- Changelog
 -- 1.0.0 Initial release
+-- 1.0.1 Adjust Mana Cooldown and Mana Potion
 --------------------------------
 local ni = ...
 
 local items = {
     settingsfile = "DreamsRotations - Druid Restoration PvE.json",
     {
-        type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Druid Restoration PvE - |cff888888v1.0.0",
+        type = "entry",
+        text = "|cff00ccffDreamsRotations |cffffffff- Druid Restoration PvE - |cff888888v1.0.1",
         tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
@@ -37,7 +38,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 40,
+        value = 20,
         key = "runicmanapotion",
     },
     {
@@ -45,7 +46,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(29166)) .. ":26:26\124t Innervate if you are %MP or less",
         tooltip = "Cast Innervate if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 60,
         key = "innervate",
     },
     {

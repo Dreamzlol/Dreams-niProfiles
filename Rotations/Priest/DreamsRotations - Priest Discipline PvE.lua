@@ -1,6 +1,6 @@
 --------------------------------
 -- DreamsRotations - Priest Discipline PvE
--- Version - 1.0.8
+-- Version - 1.0.9
 -- Author - Dreams
 --------------------------------
 -- Changelog
@@ -13,14 +13,15 @@
 -- 1.0.6 Added Power Word: Shield Priority
 -- 1.0.7 Added Tank priority
 -- 1.0.8 Added Runic Mana Potion
+-- 1.0.9 Adjust Mana Cooldown and Mana Potion
 --------------------------------
 local ni = ...
 
 local items = {
     settingsfile = "DreamsRotations - Priest Discipline PvE.json",
     {
-        type = "title",
-        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.8",
+        type = "entry",
+        text = "|cff00ccffDreamsRotations |cffffffff- Priest Discipline PvE - |cff888888v1.0.9",
         tooltip = "Note: IF YOU PAYED FOR THAT PROFILE YOU GOT SCAMMED, THEY FREE. Contact me at Discord: Dreams#5270 ",
     },
     {
@@ -53,7 +54,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 40,
+        value = 20,
         key = "runicmanapotion",
     },
     {
@@ -61,7 +62,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you are %MP or less",
         tooltip = "Cast Shadowfiend on target if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 60,
         key = "shadowfiend",
     },
     {
