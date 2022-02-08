@@ -71,23 +71,21 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(34433)) .. ":26:26\124t Shadowfiend if you are %MP or less",
         tooltip = "Cast Shadowfiend on target if you at or below mana percentage",
         enabled = true,
-        value = 60,
+        value = 40,
         key = "shadowfiend",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff and are HP% or more",
-        tooltip = "Cast Cure Disease if you or ally has a disease debuff and have more health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(528)) .. ":26:26\124t Cure Disease if you or ally has a disease debuff",
+        tooltip = "Cast Cure Disease if you or ally has a disease debuff",
         enabled = true,
-        value = 80,
         key = "curedisease",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff and are HP% or more",
-        tooltip = "Cast Dispell Magic if you or ally has a magic debuff and have more health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(988)) .. ":26:26\124t Dispell Magic if you or ally has a magic debuff",
+        tooltip = "Cast Dispell Magic if you or ally has a magic debuff",
         enabled = true,
-        value = 80,
         key = "dispellmagic",
     },
     {
@@ -137,7 +135,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48066)) .. ":26:26\124t Power Word: Shield if you or ally are HP% or less (High Priority)",
         tooltip = "Cast Power Word: Shield if you or ally are at or below health percentage",
         enabled = true,
-        value = 80,
+        value = 60,
         key = "powerwordshieldlowhp",
     },
     {
@@ -257,9 +255,9 @@ local queue = {
     "Power Word: Shield (Low HP)",
     "Penance (Tank)",
     "Penance",
+    "Prayer of Healing",
     "Flash Heal (Tank)",
     "Flash Heal",
-    "Prayer of Healing",
     "Prayer of Mending (Tank)",
     "Renew (Tank)",
     "Disease",
@@ -359,11 +357,10 @@ local abilities = {
     end,
 
     ["Disease"] = function()
-        local value, enabled = GetSetting("curedisease")
+        local _, enabled = GetSetting("curedisease")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Disease")
-                and ni.members[i].hp > value
                 and ni.spell.available(spell.curedisease)
                 and ni.spell.valid(ni.members[i].unit, spell.curedisease, false, true, true) then
                     ni.spell.cast(spell.curedisease, ni.members[i].unit)
@@ -374,11 +371,10 @@ local abilities = {
     end,
 
     ["Dispel Magic"] = function()
-        local value, enabled = GetSetting("dispellmagic")
+        local _, enabled = GetSetting("dispellmagic")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i]:debufftype("Magic")
-                and ni.members[i].hp > value
                 and ni.spell.available(spell.dispelmagic)
                 and ni.spell.valid(ni.members[i].unit, spell.dispelmagic, false, true, true) then
                     ni.spell.cast(spell.dispelmagic, ni.members[i].unit)
