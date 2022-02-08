@@ -96,15 +96,15 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation if you or ally are HP% or less (High Priority)",
         tooltip = "Cast Rejuvenation if you or ally are at or below health percentage",
         enabled = true,
-        value = 60,
+        value = 80,
         key = "rejuvenationlowhp",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation (All)",
-        tooltip = "Cast Rejuvenation on all allys in raid",
+        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation (Raid)",
+        tooltip = "Cast Rejuvenation on all raid member",
         enabled = true,
-        key = "rejuvenationall",
+        key = "rejuvenationraid",
     },
     {
         type = "separator",
@@ -197,16 +197,16 @@ local queue = {
     "Innervate",
     "Runic Mana Potion",
     "Glowing Twilight Scale",
-    "Swiftmend (Tank)",
-    "Nourish (Tank)",
-    "Swiftmend",
-    "Wild Growth",
     "Lifebloom (Tank)",
+    "Swiftmend (Tank)",
+    "Swiftmend",
     "Rejuvenation (Tank)",
-    "Regrowth (Tank)",
+    "Nourish (Tank)",
     "Rejuvenation (Low HP)",
     "Nourish",
-    "Rejuvenation (All)",
+    "Wild Growth",
+    "Regrowth (Tank)",
+    "Rejuvenation (Raid)",
 }
 
 local abilities = {
@@ -409,8 +409,8 @@ local abilities = {
         end
     end,
 
-    ["Rejuvenation (All)"] = function()
-        local _, enabled = GetSetting("rejuvenationall")
+    ["Rejuvenation (Raid)"] = function()
+        local _, enabled = GetSetting("rejuvenationraid")
         if enabled then
             for i = 1, #ni.members do
                 if not ni.unit.buff(ni.members[i].unit, spell.rejuvenation, "player")
