@@ -37,7 +37,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 40,
         key = "runicmanapotion",
     },
     {
@@ -92,7 +92,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation if you or ally are HP% or less (Low HP)",
+        text = "\124T" .. select(3, GetSpellInfo(48441)) .. ":26:26\124t Rejuvenation if you or ally are HP% or less (High Priority)",
         tooltip = "Cast Rejuvenation if you or ally are at or below health percentage",
         enabled = true,
         value = 60,

@@ -63,7 +63,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 40,
         key = "runicmanapotion",
     },
     {
@@ -229,8 +229,8 @@ local queue = {
     "Tidal Force",
     "Riptide",
     "Healing Wave (Tank)",
-    "Lesser Healing Wave (Tank)",
     "Chain Heal",
+    "Lesser Healing Wave (Tank)",
     "Healing Wave",
     "Lesser Healing Wave",
 }
