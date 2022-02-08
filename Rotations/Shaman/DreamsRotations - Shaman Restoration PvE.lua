@@ -69,10 +69,9 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(51886)) .. ":26:26\124t Cleanse Spirit if you or ally has a Debuff and are HP% or more",
-        tooltip = "Cast Cleanse Spirit if you or ally has Poison, Disease or Curse Debuff and are at or more than health percentage",
+        text = "\124T" .. select(3, GetSpellInfo(51886)) .. ":26:26\124t Cleanse Spirit if you or ally has a Debuff",
+        tooltip = "Cast Cleanse Spirit if you or ally has Poison, Disease or Curse Debuff",
         enabled = true,
-        value = 80,
         key = "cleansespirit",
     },
     {
@@ -287,11 +286,10 @@ local abilities = {
     end,
 
     ["Cleanse Spirit"] = function()
-        local value, enabled = GetSetting("cleansespirit")
+        local _, enabled = GetSetting("cleansespirit")
         if enabled then
             for i = 1, #ni.members do
                 if ni.members[i].dispel
-                and ni.members[i].hp > value
                 and ni.spell.available(spell.cleansespirit)
                 and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, false, true, true) then
                     ni.spell.cast(spell.cleansespirit, ni.members[i].unit)
