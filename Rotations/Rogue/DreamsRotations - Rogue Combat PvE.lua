@@ -111,7 +111,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48672)) .. ":26:26\124t Rupture at or more combopoints",
         tooltip = "Cast Rupture if you have at or more combopoints",
         enabled = true,
-        value = 2,
+        value = 4,
         key = "rupture",
     },
     {
@@ -119,7 +119,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(48668)) .. ":26:26\124t Eviscerate at or more combopoints",
         tooltip = "Cast Eviscerate if you have at or more combopoints",
         enabled = true,
-        value = 5,
+        value = 4,
         key = "eviscerate",
     },
 }
@@ -169,10 +169,10 @@ local queue = {
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
     "Slice and Dice",
-    "Rupture",
     "Killing Spree",
     "Blade Flurry",
     "Adrenaline Rush",
+    "Rupture",
     "Eviscerate",
     "Sinister Strike",
 }
@@ -276,9 +276,8 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.killingspree)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", spell.rupture, "player")
             and ni.unit.buff("player", spell.sliceanddice)
-            and ni.player.power() < 70 then
+            and ni.player.power() < 50 then
                 ni.spell.cast(spell.killingspree, "target")
                 return true;
             end
@@ -290,7 +289,6 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.bladeflurry)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", spell.rupture, "player")
             and ni.unit.buff("player", spell.sliceanddice) then
                 ni.spell.cast(spell.bladeflurry)
                 return true;
@@ -303,7 +301,6 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.adrenalinerush)
             and ni.unit.isboss("target")
-            and ni.unit.debuff("target", spell.rupture, "player")
             and ni.unit.buff("player", spell.sliceanddice)
             and ni.player.power() < 50 then
                 ni.spell.cast(spell.adrenalinerush)
@@ -342,7 +339,7 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.eviscerate)
             and ni.spell.valid("target", spell.eviscerate, true, true)
-            and GetComboPoints("player", "target") == value then
+            and GetComboPoints("player", "target") >= value then
                 ni.spell.cast(spell.eviscerate, "target")
                 return true;
             end
