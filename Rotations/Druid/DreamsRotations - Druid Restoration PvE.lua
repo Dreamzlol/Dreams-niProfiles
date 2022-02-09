@@ -38,7 +38,7 @@ local items = {
         text = "\124T" .. GetItemIcon(33448) .. ":26:26\124t Runic Mana Potion if you are MP% or less",
         tooltip = "Use Runic Mana Potion if you at or below mana percentage",
         enabled = true,
-        value = 20,
+        value = 10,
         key = "runicmanapotion",
     },
     {
@@ -198,13 +198,13 @@ local queue = {
     "Runic Mana Potion",
     "Glowing Twilight Scale",
     "Lifebloom (Tank)",
+    "Wild Growth",
     "Swiftmend (Tank)",
     "Swiftmend",
     "Rejuvenation (Tank)",
-    "Nourish (Tank)",
     "Rejuvenation (Low HP)",
+    "Nourish (Tank)",
     "Nourish",
-    "Wild Growth",
     "Regrowth (Tank)",
     "Rejuvenation (Raid)",
 }
@@ -309,8 +309,7 @@ local abilities = {
                 if ni.members[i].istank
                 and ni.spell.available(spell.lifebloom)
                 and ni.spell.valid(ni.members[i].unit, spell.lifebloom, false, true, true)
-                and ni.unit.buff("player", spell.clearcasting)
-                and ni.unit.buffstacks(ni.members[i].unit, spell.lifebloom) <= 3 then
+                and ni.unit.buff("player", spell.clearcasting) then
                     ni.spell.cast(spell.lifebloom, ni.members[i].unit)
                     return true;
                 end
