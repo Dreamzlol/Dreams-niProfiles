@@ -145,30 +145,30 @@ local items = {
     },
     {
         type = "title",
-        text = "|cff00ccffTank Settings",
+        text = "|cff00ccffTank Settings (High Priority)",
     },
     {
         type = "separator",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if Tank is at HP% or less (High Priority)",
-        tooltip = "Cast Lesser Healing Wave if Tank is at or below health percentage (High Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(49276)) .. ":26:26\124t Lesser Healing Wave if Tank is at HP% or less",
+        tooltip = "Cast Lesser Healing Wave if Tank is at or below health percentage",
         enabled = true,
         value = 80,
         key = "lesserhealingwavetank",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(49273)) .. ":26:26\124t Healing Wave if Tank is at HP% or less (High Priority)",
-        tooltip = "Cast Healing Wave if Tank is at or below health percentage (High Priority)",
+        text = "\124T" .. select(3, GetSpellInfo(49273)) .. ":26:26\124t Healing Wave if Tank is at HP% or less",
+        tooltip = "Cast Healing Wave if Tank is at or below health percentage",
         enabled = true,
         value = 60,
         key = "healingwavetank",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(49284)) .. ":26:26\124t Earth Shield on Focus (Tank)",
+        text = "\124T" .. select(3, GetSpellInfo(49284)) .. ":26:26\124t Earth Shield on Focus",
         tooltip = "Cast Earth Shield on focus, remember too have the main tank as focus target",
         enabled = true,
         key = "earthshield",
@@ -228,11 +228,12 @@ local queue = {
     "Nature's Swiftness",
     "Tidal Force",
     "Riptide",
-    "Healing Wave (Tank)",
     "Chain Heal",
-    "Lesser Healing Wave (Tank)",
+    "Healing Wave (Tank)",
     "Healing Wave",
+    "Lesser Healing Wave (Tank)",
     "Lesser Healing Wave",
+
 }
 
 local abilities = {
