@@ -253,6 +253,7 @@ local queue = {
     "Glowing Twilight Scale",
     "Power Word: Shield (Tank)",
     "Power Word: Shield (Low HP)",
+    "Prayer of Mending (Tank)",
     "Penance (Tank)",
     "Penance",
     "Flash Heal (Tank)",

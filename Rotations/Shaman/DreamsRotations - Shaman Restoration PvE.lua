@@ -228,12 +228,11 @@ local queue = {
     "Nature's Swiftness",
     "Tidal Force",
     "Riptide",
-    "Chain Heal",
     "Healing Wave (Tank)",
+    "Chain Heal",
     "Healing Wave",
     "Lesser Healing Wave (Tank)",
     "Lesser Healing Wave",
-
 }
 
 local abilities = {
