@@ -69,13 +69,6 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(51886)) .. ":26:26\124t Cleanse Spirit if you or ally has a Debuff",
-        tooltip = "Cast Cleanse Spirit if you or ally has Poison, Disease or Curse Debuff",
-        enabled = true,
-        key = "cleansespirit",
-    },
-    {
-        type = "entry",
         text = "\124T" .. GetItemIcon(54589) .. ":26:26\124t Glowing Twilight Scale if 4 or more allys are HP% or less",
         tooltip = "Use Glowing Twilight Scale if 4 or more allys are HP% or less",
         enabled = true,
@@ -203,7 +196,6 @@ local spell = {
     watershield = GetSpellInfo(57960),
     naturesswiftness = GetSpellInfo(16188),
     tidalforce = GetSpellInfo(55198),
-    cleansespirit = GetSpellInfo(51886),
     earthlivingweapon = GetSpellInfo(51994),
     calloftheelements = GetSpellInfo(66842),
     wrathofairtotem = GetSpellInfo(2895),
@@ -219,7 +211,6 @@ local queue = {
     "Earth Shield",
     "Water Shield",
     "Earthliving Weapon",
-    "Cleanse Spirit",
     "Pause Rotation",
     "Mana Tide Totem",
     "Runic Mana Potion",
@@ -281,20 +272,6 @@ local abilities = {
             and ni.spell.available(spell.earthlivingweapon) then
                 ni.spell.cast(spell.earthlivingweapon)
                 return true;
-            end
-        end
-    end,
-
-    ["Cleanse Spirit"] = function()
-        local _, enabled = GetSetting("cleansespirit")
-        if enabled then
-            for i = 1, #ni.members do
-                if ni.members[i].dispel
-                and ni.spell.available(spell.cleansespirit)
-                and ni.spell.valid(ni.members[i].unit, spell.cleansespirit, false, true, true) then
-                    ni.spell.cast(spell.cleansespirit, ni.members[i].unit)
-                    return true;
-                end
             end
         end
     end,

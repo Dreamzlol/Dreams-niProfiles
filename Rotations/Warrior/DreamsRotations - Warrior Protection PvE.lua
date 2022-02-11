@@ -50,8 +50,15 @@ local items = {
     },
     {
         type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(47440)) .. ":26:26\124t Commanding Shout",
+        tooltip = "Cast Commanding Shout",
+        enabled = true,
+        key = "commandingshout",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(57823)) .. ":26:26\124t Revenge",
-        tooltip = "Cast Revenge on proc",
+        tooltip = "Cast Revenge",
         enabled = true,
         key = "revenge",
     },
@@ -61,13 +68,6 @@ local items = {
         tooltip = "Cast Shield Slam",
         enabled = true,
         key = "shieldslam",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(46968)) .. ":26:26\124t Shockwave",
-        tooltip = "Cast Shockwave",
-        enabled = true,
-        key = "shockwave",
     },
     {
         type = "entry",
@@ -92,65 +92,76 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(47465)) .. ":26:26\124t Rend",
-        tooltip = "Cast Rend and keeps it active on target",
+        text = "\124T" .. select(3, GetSpellInfo(47502)) .. ":26:26\124t Thunder Clap",
+        tooltip = "Cast Thunder Clap",
         enabled = true,
-        key = "rend",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(12809)) .. ":26:26\124t Concussion Blow",
-        tooltip = "Cast Concussion Blow",
-        enabled = true,
-        key = "concussionblow",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(47520)) .. ":26:26\124t Cleave at or more enemies in range",
-        tooltip = "Cast Cleave at or more enemies are around your target",
-        enabled = true,
-        value = 2,
-        key = "cleave",
-    },
-    {
-        type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(47502)) .. ":26:26\124t Thunder Clap at or more enemies in range",
-        tooltip = "Cast Thunder Clap at or more enemies are around your target",
-        enabled = true,
-        value = 2,
         key = "thunderclap",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(47450)) .. ":26:26\124t Heroic Strike at or have more rage",
-        tooltip = "Cast Heroic Strike if you have or more rage",
+        text = "\124T" .. select(3, GetSpellInfo(47450)) .. ":26:26\124t Heroic Strike when you have %RAGE or more",
+        tooltip = "Cast Heroic Strike if have rage percentage or more",
         enabled = true,
         value = 60,
         key = "heroicstrike",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(2565)) .. ":26:26\124t Shield Block when you have HP% or less",
-        tooltip = "Cast Shield Block if have health % or less",
+        text = "\124T" .. select(3, GetSpellInfo(46968)) .. ":26:26\124t Shockwave if the amount or more enemies are in range",
+        tooltip = "Cast Shockwave if the amount or more enemies are in range",
         enabled = true,
-        value = 90,
-        key = "shieldblock",
+        value = 2,
+        key = "shockwave",
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(871)) .. ":26:26\124t Shield Wall when you have HP% or less",
-        tooltip = "Cast Shield Wall if have health % or less",
+        text = "\124T" .. select(3, GetSpellInfo(47520)) .. ":26:26\124t Cleave when you have %RAGE or more",
+        tooltip = "Cast Cleave if more than 1 enemies are in range and if you have rage percentage or more",
         enabled = true,
-        value = 20,
-        key = "shieldwall",
+        value = 40,
+        key = "cleave",
+    },
+    {
+        type = "separator",
+    },
+    {
+        type = "title",
+        text = "|cff00ccffCooldown Settings",
+    },
+    {
+        type = "separator",
     },
     {
         type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(12975)) .. ":26:26\124t Last Stand when you have HP% or less",
         tooltip = "Cast Last Stand if have health % or less",
         enabled = true,
-        value = 40,
+        value = 60,
         key = "laststand",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(2565)) .. ":26:26\124t Shield Block when you have HP% or less",
+        tooltip = "Cast Shield Block if have health percentage or less",
+        enabled = true,
+        value = 80,
+        key = "shieldblock",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(871)) .. ":26:26\124t Shield Wall when you have HP% or less",
+        tooltip = "Cast Shield Wall if you have health percentage or less",
+        enabled = true,
+        value = 40,
+        key = "shieldwall",
+    },
+    {
+        type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(55694)) .. ":26:26\124t Enraged Regeneration when you have HP% or less",
+        tooltip = "Cast Enraged Regeneration if you have health percentage or less",
+        enabled = true,
+        value = 60,
+        key = "enragedregeneration",
     },
 }
 
@@ -172,45 +183,48 @@ local function onunload()
     ni.GUI.DestroyFrame("DreamsRotations - Warrior Protection PvE");
 end
 
--- Spells
-local AutoAttack = GetSpellInfo(6603)
-local Revenge = GetSpellInfo(57823)
-local ShieldSlam = GetSpellInfo(47488)
-local ShieldBlock = GetSpellInfo(2565)
-local ShieldBash = GetSpellInfo(72)
-local Rend = GetSpellInfo(47465)
-local Cleave = GetSpellInfo(47520)
-local Devastate = GetSpellInfo(47498)
-local HeroicStrike = GetSpellInfo(47450)
-local HeroicThrow = GetSpellInfo(57755)
-local ThunderClap = GetSpellInfo(47502)
-local ShieldWall = GetSpellInfo(871)
-local LastStand = GetSpellInfo(12975)
-local Shockwave = GetSpellInfo(46968)
-local ConcussionBlow = GetSpellInfo(12809)
+local spell = {
+    autoattack = GetSpellInfo(6603),
+    revenge = GetSpellInfo(57823),
+    shieldslam = GetSpellInfo(47488),
+    shieldblock = GetSpellInfo(2565),
+    shieldbash = GetSpellInfo(72),
+    rend = GetSpellInfo(47465),
+    cleave = GetSpellInfo(47520),
+    devastate = GetSpellInfo(47498),
+    heroicstrike = GetSpellInfo(47450),
+    heroicthrow = GetSpellInfo(57755),
+    thunderclap = GetSpellInfo(47502),
+    shieldwall = GetSpellInfo(871),
+    laststand = GetSpellInfo(12975),
+    shockwave = GetSpellInfo(46968),
+    commandingshout = GetSpellInfo(47440),
+    enragedregeneration = GetSpellInfo(55694),
+}
 
--- Items
-local Food = GetSpellInfo(45548)
-local Drink = GetSpellInfo(57073)
+local item = {
+    food = GetSpellInfo(45548),
+    drink = GetSpellInfo(57073),
+}
 
 local queue = {
     "Pause Rotation",
+    "Commanding Shout",
     "Auto Target",
     "Auto Attack",
+    "Enraged Regeneration",
     "Shield Wall",
     "Last Stand",
     "Shield Block",
+    "Cleave",
+    "Heroic Strike",
     "Shield Bash",
+    "Shield Slam",
     "Shockwave",
     "Thunder Clap",
-    "Cleave",
-    "Heroic Throw",
-    "Shield Slam",
-    "Rend",
     "Revenge",
-    "Concussion Blow",
-    "Heroic Strike",
     "Devastate",
+    "Heroic Throw",
 }
 
 local abilities = {
@@ -223,8 +237,8 @@ local abilities = {
         or not UnitAffectingCombat("player")
         or ni.unit.ischanneling("player")
         or ni.unit.iscasting("player")
-        or ni.unit.buff("player", Food)
-        or ni.unit.buff("player", Drink) then
+        or ni.unit.buff("player", item.food)
+        or ni.unit.buff("player", item.drink) then
             return true;
         end
     end,
@@ -250,8 +264,19 @@ local abilities = {
             and UnitCanAttack("player", "target")
             and not UnitIsDeadOrGhost("target")
             and UnitAffectingCombat("player")
-            and not IsCurrentSpell(AutoAttack) then
-                ni.spell.cast(AutoAttack)
+            and not IsCurrentSpell(spell.autoattack) then
+                ni.spell.cast(spell.autoattack)
+                return true;
+            end
+        end
+    end,
+
+    ["Commanding Shout"] = function()
+        local _, enabled = GetSetting("commandingshout")
+        if enabled then
+            if ni.spell.available(spell.commandingshout)
+            and not ni.unit.buff("player", spell.commandingshout) then
+                ni.spell.cast(spell.commandingshout)
                 return true;
             end
         end
@@ -260,9 +285,10 @@ local abilities = {
     ["Revenge"] = function()
         local _, enabled = GetSetting("revenge")
         if enabled then
-            if ni.spell.available(Revenge)
-            and IsUsableSpell("Revenge") then
-                ni.spell.cast(Revenge, "target")
+            if ni.spell.available(spell.revenge)
+            and ni.spell.valid("target", spell.revenge, true, true)
+            and IsUsableSpell(spell.revenge) then
+                ni.spell.cast(spell.revenge, "target")
                 return true;
             end
         end
@@ -271,9 +297,9 @@ local abilities = {
     ["Shield Slam"] = function()
         local _, enabled = GetSetting("shieldslam")
         if enabled then
-            if ni.spell.available(ShieldSlam)
-            and ni.spell.valid("target", ShieldSlam, true, true) then
-                ni.spell.cast(ShieldSlam, "target")
+            if ni.spell.available(spell.shieldslam)
+            and ni.spell.valid("target", spell.shieldslam, true, true) then
+                ni.spell.cast(spell.shieldslam, "target")
                 return true;
             end
         end
@@ -282,9 +308,9 @@ local abilities = {
     ["Shield Block"] = function()
         local value, enabled = GetSetting("shieldblock")
         if enabled then
-            if ni.spell.available(ShieldBlock)
+            if ni.spell.available(spell.shieldblock)
             and ni.unit.hp("player") < value then
-                ni.spell.cast(ShieldBlock)
+                ni.spell.cast(spell.shieldblock)
                 return true;
             end
         end
@@ -293,9 +319,20 @@ local abilities = {
     ["Shield Wall"] = function()
         local value, enabled = GetSetting("shieldwall")
         if enabled then
-            if ni.spell.available(ShieldWall)
+            if ni.spell.available(spell.shieldwall)
             and ni.unit.hp("player") < value then
-                ni.spell.cast(ShieldWall)
+                ni.spell.cast(spell.shieldwall)
+                return true;
+            end
+        end
+    end,
+
+    ["Enraged Regeneration"] = function()
+        local value, enabled = GetSetting("enragedregeneration")
+        if enabled then
+            if ni.spell.available(spell.enragedregeneration)
+            and ni.unit.hp("player") < value then
+                ni.spell.cast(spell.enragedregeneration)
                 return true;
             end
         end
@@ -304,9 +341,9 @@ local abilities = {
     ["Last Stand"] = function()
         local value, enabled = GetSetting("laststand")
         if enabled then
-            if ni.spell.available(LastStand)
+            if ni.spell.available(spell.laststand)
             and ni.unit.hp("player") < value then
-                ni.spell.cast(LastStand)
+                ni.spell.cast(spell.laststand)
                 return true;
             end
         end
@@ -315,22 +352,10 @@ local abilities = {
     ["Shield Bash"] = function()
         local _, enabled = GetSetting("shieldbash")
         if enabled then
-            if ni.spell.available(ShieldBash)
-            and ni.spell.valid("target", ShieldBash, true, true)
+            if ni.spell.available(spell.shieldbash)
+            and ni.spell.valid("target", spell.shieldbash, true, true)
             and ni.unit.iscasting("target") then
-                ni.spell.cast(ShieldBash, "target")
-                return true;
-            end
-        end
-    end,
-
-    ["Rend"] = function()
-        local _, enabled = GetSetting("rend")
-        if enabled then
-            if ni.spell.available(Rend)
-            and ni.spell.valid("target", Rend, true, true)
-            and ni.unit.debuffremaining("target", Rend, "player") <= 2 then
-                ni.spell.cast(Rend, "target")
+                ni.spell.cast(spell.shieldbash, "target")
                 return true;
             end
         end
@@ -339,9 +364,12 @@ local abilities = {
     ["Cleave"] = function()
         local value, enabled = GetSetting("cleave")
         if enabled then
-            if ni.spell.available(Cleave)
-            and #ni.unit.enemiesinrange("target", 10) > value then
-                ni.spell.cast(Cleave)
+            if ni.spell.available(spell.cleave)
+            and ni.spell.valid("target", spell.cleave, true, true)
+            and #ni.unit.enemiesinrange("target", 10) > 1
+            and not IsCurrentSpell(spell.cleave)
+            and ni.player.power() > value then
+                ni.spell.cast(spell.cleave)
                 return true;
             end
         end
@@ -350,21 +378,9 @@ local abilities = {
     ["Devastate"] = function()
         local _, enabled = GetSetting("devastate")
         if enabled then
-            if ni.spell.available(Devastate)
-            and ni.spell.valid("target", Devastate, true, true)
-            and ni.player.power() > 30 then
-                ni.spell.cast(Devastate, "target")
-                return true;
-            end
-        end
-    end,
-
-    ["Concussion Blow"] = function()
-        local _, enabled = GetSetting("concussionblow")
-        if enabled then
-            if ni.spell.available(ConcussionBlow)
-            and ni.spell.valid("target", ConcussionBlow, true, true) then
-                ni.spell.cast(ConcussionBlow, "target")
+            if ni.spell.available(spell.devastate)
+            and ni.spell.valid("target", spell.devastate, true, true) then
+                ni.spell.cast(spell.devastate, "target")
                 return true;
             end
         end
@@ -373,10 +389,12 @@ local abilities = {
     ["Heroic Strike"] = function()
         local value, enabled = GetSetting("heroicstrike")
         if enabled then
-            if ni.spell.available(HeroicStrike)
+            if ni.spell.available(spell.heroicstrike)
+            and ni.spell.valid("target", spell.heroicstrike, true, true)
+            and not IsCurrentSpell(spell.heroicstrike)
             and ni.player.power() > value
             and #ni.unit.enemiesinrange("target", 10) < 2 then
-                ni.spell.cast(HeroicStrike)
+                ni.spell.cast(spell.heroicstrike)
                 return true;
             end
         end
@@ -385,30 +403,32 @@ local abilities = {
     ["Heroic Throw"] = function()
         local _, enabled = GetSetting("heroicthrow")
         if enabled then
-            if ni.spell.available(HeroicThrow)
-            and ni.spell.valid("target", HeroicThrow, true, true) then
-                ni.spell.cast(HeroicThrow, "target")
+            if ni.spell.available(spell.heroicthrow)
+            and ni.spell.valid("target", spell.heroicthrow, true, true) then
+                ni.spell.cast(spell.heroicthrow, "target")
                 return true;
             end
         end
     end,
 
     ["Thunder Clap"] = function()
-        local value, enabled = GetSetting("thunderclap")
+        local _, enabled = GetSetting("thunderclap")
         if enabled then
-            if ni.spell.available(ThunderClap)
-            and #ni.unit.enemiesinrange("target", 10) > value then
-                ni.spell.cast(ThunderClap)
+            if ni.spell.available(spell.thunderclap)
+            and ni.unit.inmelee("player", "target")then
+                ni.spell.cast(spell.thunderclap)
                 return true;
             end
         end
     end,
 
     ["Shockwave"] = function()
-        local _, enabled = GetSetting("shockwave")
+        local value, enabled = GetSetting("shockwave")
         if enabled then
-            if ni.spell.available(Shockwave) then
-                ni.spell.cast(Shockwave)
+            if ni.spell.available(spell.shockwave)
+            and ni.unit.inmelee("player", "target")
+            and #ni.unit.enemiesinrange("target", 10) >= value then
+                ni.spell.cast(spell.shockwave)
                 return true;
             end
         end
