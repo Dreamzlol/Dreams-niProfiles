@@ -304,7 +304,7 @@ local abilities = {
             and not ni.unit.debuff("target", spell.shadowmastery)
             and not ni.unit.debuff("target", spell.winterschill)
             and not ni.unit.ismoving("player") then
-                ni.spell.cast(spell.scorch, "target")
+                ni.spell.delaycast(spell.scorch, "target", 2)
                 return true;
             end
         end
