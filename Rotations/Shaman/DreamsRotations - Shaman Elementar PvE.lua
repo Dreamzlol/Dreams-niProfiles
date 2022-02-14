@@ -27,7 +27,7 @@ local items = {
     },
     {
         type = "entry",
-        text = "\124T" .. select(3, GetSpellInfo(6603)) .. ":26:26\124t Auto Target",
+        text = "\124T" .. select(3, GetSpellInfo(2764)) .. ":26:26\124t Auto Target",
         tooltip = "Auto Target the closest enemy around you",
         enabled = true,
         key = "autotarget",
