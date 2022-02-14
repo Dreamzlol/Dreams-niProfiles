@@ -199,12 +199,12 @@ local queue = {
     "Glowing Twilight Scale",
     "Swiftmend (Tank)",
     "Swiftmend",
+    "Lifebloom (Tank)",
     "Wild Growth",
     "Nourish (Tank)",
     "Rejuvenation (Tank)",
     "Nourish",
     "Rejuvenation (Low HP)",
-    "Lifebloom (Tank)",
     "Regrowth (Tank)",
     "Rejuvenation (Raid)",
 }
@@ -309,7 +309,8 @@ local abilities = {
                 if ni.members[i].istank
                 and ni.spell.available(spell.lifebloom)
                 and ni.spell.valid(ni.members[i].unit, spell.lifebloom, false, true, true)
-                and ni.unit.buff("player", spell.clearcasting) then
+                and ni.unit.buff("player", spell.clearcasting)
+                and ni.unit.buffstacks(ni.members[i].unit, spell.lifebloom) <= 3 then
                     ni.spell.cast(spell.lifebloom, ni.members[i].unit)
                     return true;
                 end

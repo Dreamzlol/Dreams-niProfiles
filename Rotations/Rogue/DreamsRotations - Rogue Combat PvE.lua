@@ -169,10 +169,10 @@ local queue = {
     "Tricks of the Trade",
     "Hyperspeed Accelerators",
     "Slice and Dice",
+    "Rupture",
     "Killing Spree",
     "Blade Flurry",
     "Adrenaline Rush",
-    "Rupture",
     "Eviscerate",
     "Sinister Strike",
 }
@@ -251,8 +251,7 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.tricksofthetrade)
             and ni.spell.valid("focus", spell.tricksofthetrade, false, true, true)
-            and ni.unit.exists("focus")
-            and ni.player.power() < 85 then
+            and ni.unit.exists("focus") then
                 ni.spell.cast(spell.tricksofthetrade, "focus")
                 return true;
             end
@@ -327,7 +326,7 @@ local abilities = {
             if ni.spell.available(spell.rupture)
             and ni.spell.valid("target", spell.rupture, true, true)
             and GetComboPoints("player", "target") >= value
-            and ni.unit.debuffremaining("target", spell.rupture, "player") <= 2 then
+            and not ni.unit.debuff("target", spell.rupture, "player") then
                 ni.spell.cast(spell.rupture, "target")
                 return true;
             end
