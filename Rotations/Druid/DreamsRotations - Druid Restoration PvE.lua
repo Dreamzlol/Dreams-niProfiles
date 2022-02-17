@@ -88,7 +88,7 @@ local items = {
         text = "\124T" .. select(3, GetSpellInfo(50464)) .. ":26:26\124t Nourish if you or ally are HP% or less",
         tooltip = "Cast Nourish if you or ally are at or below health percentage",
         enabled = true,
-        value = 80,
+        value = 60,
         key = "nourish",
     },
     {
@@ -201,10 +201,10 @@ local queue = {
     "Swiftmend",
     "Lifebloom (Tank)",
     "Wild Growth",
-    "Nourish (Tank)",
     "Rejuvenation (Tank)",
-    "Nourish",
+    "Nourish (Tank)",
     "Rejuvenation (Low HP)",
+    "Nourish",
     "Regrowth (Tank)",
     "Rejuvenation (Raid)",
 }

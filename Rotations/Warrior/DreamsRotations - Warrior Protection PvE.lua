@@ -71,6 +71,13 @@ local items = {
     },
     {
         type = "entry",
+        text = "\124T" .. select(3, GetSpellInfo(47465)) .. ":26:26\124t Rend",
+        tooltip = "Cast Rend",
+        enabled = true,
+        key = "rend",
+    },
+    {
+        type = "entry",
         text = "\124T" .. select(3, GetSpellInfo(47498)) .. ":26:26\124t Devastate",
         tooltip = "Cast Devastate",
         enabled = true,
@@ -219,9 +226,10 @@ local queue = {
     "Shield Bash",
     "Cleave",
     "Heroic Strike",
-    "Shockwave",
     "Shield Slam",
     "Thunder Clap",
+    "Shockwave",
+    "Rend",
     "Revenge",
     "Devastate",
     "Heroic Throw",
@@ -305,6 +313,19 @@ local abilities = {
         end
     end,
 
+    ["Rend"] = function()
+        local _, enabled = GetSetting("rend")
+        if enabled then
+            if ni.spell.available(spell.rend)
+            and ni.unit.isboss("target")
+            and ni.spell.valid("target", spell.rend, true, true)
+            and not ni.unit.debuff("target", spell.rend, "player") then
+                ni.spell.cast(spell.rend, "target")
+                return true;
+            end
+        end
+    end,
+
     ["Shield Block"] = function()
         local value, enabled = GetSetting("shieldblock")
         if enabled then
@@ -354,7 +375,8 @@ local abilities = {
         if enabled then
             if ni.spell.available(spell.shieldbash)
             and ni.spell.valid("target", spell.shieldbash, true, true)
-            and ni.unit.iscasting("target") then
+            and ni.unit.iscasting("target")
+            or ni.unit.ischanneling("target") then
                 ni.spell.cast(spell.shieldbash, "target")
                 return true;
             end
