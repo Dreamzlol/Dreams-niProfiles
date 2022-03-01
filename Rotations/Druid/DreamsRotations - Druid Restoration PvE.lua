@@ -203,8 +203,8 @@ local queue = {
     "Wild Growth",
     "Rejuvenation (Tank)",
     "Nourish (Tank)",
-    "Rejuvenation (Low HP)",
     "Nourish",
+    "Rejuvenation (Low HP)",
     "Regrowth (Tank)",
     "Rejuvenation (Raid)",
 }
